@@ -1,0 +1,30 @@
+package tn.enicarthage.gestionSalleDeSport.controller;
+
+import tn.enicarthage.gestionSalleDeSport.dto.AuthResponse;
+import tn.enicarthage.gestionSalleDeSport.dto.LoginRequest;
+import tn.enicarthage.gestionSalleDeSport.dto.RegisterRequest;
+import tn.enicarthage.gestionSalleDeSport.dto.UtilisateurResponse;
+import tn.enicarthage.gestionSalleDeSport.service.AuthService;
+
+import java.sql.SQLException;
+
+public class AuthController {
+
+    private final AuthService authService = new AuthService();
+
+    public AuthResponse login(LoginRequest request) throws SQLException {
+        return authService.login(request);
+    }
+
+    public AuthResponse register(RegisterRequest request) throws SQLException {
+        return authService.register(request);
+    }
+
+    public void logout(String token) throws SQLException {
+        authService.logout(token);
+    }
+
+    public UtilisateurResponse getMe(String token) throws SQLException {
+        return authService.getMe(token);
+    }
+}

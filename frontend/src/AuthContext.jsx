@@ -1,0 +1,43 @@
+import { createContext, useContext, useState } from 'react'
+import * as api from './api'
+
+const AuthContext = createContext(null)
+
+// Fournit l'utilisateur connecte + login / register / logout a toute l'application
+export function AuthProvider({ children }) {
+  const [utilisateur, setUtilisateur] = useState(api.getSavedUser())
+
+  async function login(email, motDePasse) {
+    const res = await api.login(email, motDePasse)
+    api.saveSession(res.token, res.utilisateur)
+    setUtilisateur(res.utilisateur)
+  }
+
+  async function register(formulaire) {
+    const res = await api.register(formulaire)
+    api.saveSession(res.token, res.utilisateur)
+    setUtilisateur(res.utilisateur)
+  }
+
+  async function logout() {
+    try {
+      await api.logout()
+    } catch {
+      // meme si le serveur ne repond pas, on deconnecte cote client
+    }
+    api.clearSession()
+    setUtilisateur(null)
+  }
+
+  const estAdmin = utilisateur?.role === 'ADMIN'
+
+  return (
+    <AuthContext.Provider value={{ utilisateur, estAdmin, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth() {
+  return useContext(AuthContext)
+}
