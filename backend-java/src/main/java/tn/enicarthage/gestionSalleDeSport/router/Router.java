@@ -90,7 +90,9 @@ public class Router {
         } catch (SQLIntegrityConstraintViolationException e) {
             // ex. supprimer un coach qui anime encore des cours
             envoyer(exchange, 409, messageErreur("Operation impossible : cet element est utilise ailleurs."));
-        } catch (IllegalArgumentException | JsonParseException | DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
+            envoyer(exchange, 400, messageErreur("Date ou heure invalide (format attendu : 2026-11-20 et 18:30)."));
+        } catch (IllegalArgumentException | JsonParseException e) {
             envoyer(exchange, 400, messageErreur(e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
