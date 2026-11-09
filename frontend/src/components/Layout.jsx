@@ -26,7 +26,7 @@ export default function Layout() {
             {/* [eya] salles, cours */}
 
             {/* [nermine] abonnements */}
-            {estAdmin && <NavLink to="/abonnements">Abonnements</NavLink>}
+            {estAdmin && <NavLink to="/abonnements"><Ticket size={18} /> Abonnements</NavLink>}
 
           </nav>
           <div className="sidebar-user">
