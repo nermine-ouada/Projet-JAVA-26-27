@@ -24,8 +24,8 @@ export default function Layout() {
             <NavLink to="/profil"><UserRound size={18} /> Mon profil</NavLink>
             {estAdmin && <NavLink to="/utilisateurs"><Users size={18} /> Utilisateurs</NavLink>}
             {/* [eya] salles, cours */}
-            <NavLink to="/planning">Planning</NavLink>
-            <NavLink to="/salles">Salles</NavLink>
+            <NavLink to="/planning"><CalendarDays size={18} /> Planning</NavLink>
+            <NavLink to="/salles"><Building2 size={18} /> Salles</NavLink>
 
             {/* [nermine] abonnements */}
 
