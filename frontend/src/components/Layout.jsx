@@ -1,10 +1,11 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { Dumbbell, LogOut } from 'lucide-react'
+// Icones du menu : chaque branche importe ici celles dont elle a besoin
+import { Dumbbell, LogOut, UserRound, Users, CalendarDays, Building2, Ticket } from 'lucide-react'
 import { useAuth } from '../AuthContext'
 
 const ROLES = { ADMIN: 'Admin', COACH: 'Coach', ADHERENT: 'Adhérent' }
 
-// Barre du haut + contenu de la page courante (<Outlet />)
+// Menu lateral (tableau de bord) + contenu de la page courante (<Outlet />)
 export default function Layout() {
   const { utilisateur, estAdmin, logout } = useAuth()
   const navigate = useNavigate()
@@ -15,13 +16,13 @@ export default function Layout() {
   }
 
   return (
-    <>
-      <header className="topbar">
-        <div className="topbar-inner">
-          <Link to="/" className="brand brand-icon"><Dumbbell size={20} /> Club Atlas</Link>
-          <nav className="nav">
-            <NavLink to="/profil">Mon profil</NavLink>
-            {estAdmin && <NavLink to="/utilisateurs">Utilisateurs</NavLink>}
+    <div className="dashboard">
+      <aside className="sidebar">
+        <div className="sidebar-inner">
+          <Link to="/" className="brand brand-icon sidebar-brand"><Dumbbell size={20} /> Club Atlas</Link>
+          <nav className="sidebar-nav">
+            <NavLink to="/profil"><UserRound size={18} /> Mon profil</NavLink>
+            {estAdmin && <NavLink to="/utilisateurs"><Users size={18} /> Utilisateurs</NavLink>}
             {/* [eya] salles, cours */}
             <NavLink to="/planning">Planning</NavLink>
             <NavLink to="/salles">Salles</NavLink>
@@ -29,18 +30,22 @@ export default function Layout() {
             {/* [nermine] abonnements */}
 
           </nav>
-          <div className="user">
-            <span className="user-name">{utilisateur.prenom} {utilisateur.nom}</span>
-            <span className={'badge badge-' + utilisateur.role.toLowerCase()}>
-              {ROLES[utilisateur.role]}
-            </span>
-            <button className="btn btn-ghost" onClick={deconnexion}><LogOut size={16} /> Déconnexion</button>
+          <div className="sidebar-user">
+            <div className="sidebar-user-info">
+              <span className="user-name">{utilisateur.prenom} {utilisateur.nom}</span>
+              <span className={'badge badge-' + utilisateur.role.toLowerCase()}>
+                {ROLES[utilisateur.role]}
+              </span>
+            </div>
+            <button className="btn btn-ghost sidebar-logout" onClick={deconnexion}>
+              <LogOut size={16} /> Déconnexion
+            </button>
           </div>
         </div>
-      </header>
+      </aside>
       <main className="page">
         <Outlet />
       </main>
-    </>
+    </div>
   )
 }
