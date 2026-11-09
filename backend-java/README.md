@@ -1,4 +1,4 @@
-# Backend — Gestion de salle de sport
+# Backend : gestion de salle de sport
 
 API REST en Java pur (sans framework), selon le Guide :
 
@@ -46,13 +46,13 @@ Le role (ADMIN / COACH / ADHERENT) est deduit de la table qui contient l'utilisa
 |---------|---------------------|----------|------------|
 | POST    | /auth/register      | public   | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":"secret1"}` |
 | POST    | /auth/login         | public   | `{"email":"admin@fitness.tn","motDePasse":"admin123"}` |
-| GET     | /auth/me            | connecte | — |
-| POST    | /auth/logout        | connecte | — |
-| GET     | /utilisateurs       | ADMIN    | — |
-| GET     | /utilisateurs/{id}  | ADMIN    | — |
+| GET     | /auth/me            | connecte | aucun |
+| POST    | /auth/logout        | connecte | aucun |
+| GET     | /utilisateurs       | ADMIN    | aucun |
+| GET     | /utilisateurs/{id}  | ADMIN    | aucun |
 | POST    | /utilisateurs       | ADMIN    | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":"secret1","role":"COACH"}` |
 | PUT     | /utilisateurs/{id}  | ADMIN    | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":""}` |
-| DELETE  | /utilisateurs/{id}  | ADMIN    | — |
+| DELETE  | /utilisateurs/{id}  | ADMIN    | aucun |
 
 - `role` : `ADMIN`, `COACH` ou `ADHERENT` (fixe a la creation, ignore en modification).
 - En modification, `motDePasse` vide = mot de passe inchange.

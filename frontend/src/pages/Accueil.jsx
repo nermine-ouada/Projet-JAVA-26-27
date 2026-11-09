@@ -25,9 +25,9 @@ const AVANTAGES = [
 ]
 
 const HORAIRES = [
-  ['Lundi – Vendredi', '06:00 – 22:00'],
-  ['Samedi', '08:00 – 20:00'],
-  ['Dimanche', '09:00 – 14:00'],
+  ['Lundi au vendredi', '6h à 22h'],
+  ['Samedi', '8h à 20h'],
+  ['Dimanche', '9h à 14h'],
 ]
 
 export default function Accueil() {

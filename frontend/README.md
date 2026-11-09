@@ -1,4 +1,4 @@
-# Frontend — Gestion salle de sport
+# Frontend : gestion salle de sport
 
 Interface web (React + Vite) qui consomme l'API Java du dossier `backend-java`.
 
