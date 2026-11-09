@@ -1,5 +1,6 @@
 import { useAuth } from '../AuthContext'
 import { ROLES } from './Utilisateurs'
+import MesAbonnements from '../components/MesAbonnements'
 
 // Informations du compte connecté (visible par tous les rôles)
 export default function Profil() {
@@ -26,6 +27,8 @@ export default function Profil() {
           <dd><span className={'badge badge-' + utilisateur.role.toLowerCase()}>{ROLES[utilisateur.role]}</span></dd>
         </dl>
       </div>
+
+      {utilisateur.role === 'ADHERENT' && <MesAbonnements />}
     </>
   )
 }

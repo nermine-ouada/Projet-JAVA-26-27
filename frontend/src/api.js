@@ -69,3 +69,12 @@ export const deleteUtilisateur = (id) => request('/utilisateurs/' + id, 'DELETE'
 // ---------- [eya] Salles, Cours ----------
 
 // ---------- [nermine] Abonnements ----------
+
+// Admin : tous les abonnements. Adherent : seulement les siens.
+export const getAbonnements = () => request('/abonnements')
+export const getAbonnement = (id) => request('/abonnements/' + id)
+export const createAbonnement = (abonnement) => request('/abonnements', 'POST', abonnement)
+export const updateAbonnement = (id, abonnement) => request('/abonnements/' + id, 'PUT', abonnement)
+export const deleteAbonnement = (id) => request('/abonnements/' + id, 'DELETE')
+
+export const getAdherents = () => request('/adherents')

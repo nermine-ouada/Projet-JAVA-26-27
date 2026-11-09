@@ -9,6 +9,7 @@ import Utilisateurs from './pages/Utilisateurs'
 // [eya] salles, cours
 
 // [nermine] abonnements
+import Abonnements from './pages/Abonnements'
 
 // Bloque l'acces aux pages si l'utilisateur n'est pas connecte
 function Protege({ children }) {
@@ -37,6 +38,7 @@ export default function App() {
         {/* [eya] salles, cours */}
 
         {/* [nermine] abonnements */}
+        <Route path="/abonnements" element={<AdminSeulement><Abonnements /></AdminSeulement>} />
 
       </Route>
 

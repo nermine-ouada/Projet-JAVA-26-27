@@ -61,6 +61,21 @@ Le role (ADMIN / COACH / ADHERENT) est deduit de la table qui contient l'utilisa
 <!-- [eya] salles, cours -->
 
 <!-- [nermine] abonnements -->
+### Abonnements (branche nermine)
+
+| Methode | URL                 | Acces            | Corps JSON |
+|---------|---------------------|------------------|------------|
+| GET     | /abonnements        | ADMIN, ADHERENT  | aucun (l'adherent recoit seulement les siens) |
+| GET     | /abonnements/{id}   | ADMIN            | aucun |
+| POST    | /abonnements        | ADMIN            | `{"type":"Mensuel","dateDebut":"2026-11-01","dateFin":"2026-12-01","prix":80,"adherentId":1}` |
+| PUT     | /abonnements/{id}   | ADMIN            | meme corps que POST |
+| DELETE  | /abonnements/{id}   | ADMIN            | aucun |
+| GET     | /adherents          | ADMIN            | aucun (liste pour le formulaire d'abonnement) |
+
+- `type` : `Mensuel`, `Trimestriel` ou `Annuel`.
+- `adherentId` est l'id de la table `adherent` (voir `GET /adherents`).
+- La date de fin doit etre apres la date de debut, le prix doit etre positif.
+- Chaque abonnement renvoye contient un `statut` calcule : `ACTIF`, `EXPIRE` ou `A_VENIR`.
 
 ## Codes HTTP
 

@@ -58,6 +58,7 @@ public class Router {
     // [eya] salles, cours
 
     // [nermine] abonnements
+    private final AbonnementController abonnementController = new AbonnementController();
 
 
     // Point d'entree unique pour toutes les requetes HTTP
@@ -112,6 +113,10 @@ public class Router {
             // [eya] salles, cours
 
             // [nermine] abonnements
+            case "abonnements":
+                return routesAbonnement(methode, segments, exchange);
+            case "adherents":
+                return routesAdherent(methode, segments, exchange);
 
             default:
                 throw new ResourceNotFoundException("Route inconnue : /" + segments[1]);
@@ -224,6 +229,88 @@ public class Router {
 
     // =========================================================
     // [nermine] Routes abonnements
+
+    // ---------------------------------------------------------
+    // CRUD Abonnements
+    // GET    /abonnements        -> getAbonnements (ADMIN : tous, ADHERENT : les siens)
+    // GET    /abonnements/{id}   -> getAbonnement     (ADMIN)
+    // POST   /abonnements        -> createAbonnement  (ADMIN)
+    // PUT    /abonnements/{id}   -> updateAbonnement  (ADMIN)
+    // DELETE /abonnements/{id}   -> deleteAbonnement  (ADMIN)
+    // ---------------------------------------------------------
+    private Reponse routesAbonnement(String methode, String[] segments, HttpExchange exchange)
+            throws IOException, SQLException {
+        UtilisateurResponse connecte = getMe(exchange);
+
+        // Un adherent peut seulement lire la liste de ses propres abonnements
+        if (segments.length == 2 && methode.equals("GET") && connecte.role().equals("ADHERENT")) {
+            return getMesAbonnements(connecte);
+        }
+        exigerRole(connecte, "ADMIN");
+
+        if (segments.length == 2) {
+            switch (methode) {
+                case "GET":  return getAbonnements();
+                case "POST": return createAbonnement(exchange);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /abonnements");
+            }
+        }
+
+        if (segments.length == 3) {
+            int id = entier(segments[2]);
+            switch (methode) {
+                case "GET":    return getAbonnement(id);
+                case "PUT":    return updateAbonnement(exchange, id);
+                case "DELETE": return deleteAbonnement(id);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /abonnements/{id}");
+            }
+        }
+
+        throw new ResourceNotFoundException("Route inconnue : " + String.join("/", segments));
+    }
+
+    private Reponse getAbonnements() throws SQLException {
+        return new Reponse(200, gson.toJson(abonnementController.getAbonnements()));
+    }
+
+    private Reponse getMesAbonnements(UtilisateurResponse connecte) throws SQLException {
+        return new Reponse(200, gson.toJson(abonnementController.getMesAbonnements(connecte.id())));
+    }
+
+    private Reponse getAbonnement(int id) throws SQLException {
+        return new Reponse(200, gson.toJson(abonnementController.getAbonnement(id)));
+    }
+
+    private Reponse createAbonnement(HttpExchange exchange) throws IOException, SQLException {
+        AbonnementRequest request = lireCorps(exchange, AbonnementRequest.class);
+        return new Reponse(201, gson.toJson(abonnementController.createAbonnement(request)));
+    }
+
+    private Reponse updateAbonnement(HttpExchange exchange, int id) throws IOException, SQLException {
+        AbonnementRequest request = lireCorps(exchange, AbonnementRequest.class);
+        return new Reponse(200, gson.toJson(abonnementController.updateAbonnement(id, request)));
+    }
+
+    private Reponse deleteAbonnement(int id) throws SQLException {
+        abonnementController.deleteAbonnement(id);
+        return new Reponse(204, "");
+    }
+
+    // GET /adherents (ADMIN) -> getAdherents : liste pour le formulaire d'abonnement
+    private Reponse routesAdherent(String methode, String[] segments, HttpExchange exchange)
+            throws SQLException {
+        exigerRole(getMe(exchange), "ADMIN");
+        if (segments.length == 2 && methode.equals("GET")) {
+            return getAdherents();
+        }
+        throw new ResourceNotFoundException("Route inconnue : " + methode + " " + String.join("/", segments));
+    }
+
+    private Reponse getAdherents() throws SQLException {
+        return new Reponse(200, gson.toJson(abonnementController.getAdherents()));
+    }
 
     // ---------------------------------------------------------
     // Outils

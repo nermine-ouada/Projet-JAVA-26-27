@@ -397,3 +397,16 @@ a.btn { text-decoration: none; }
 /* [eya] salles, cours */
 
 /* [nermine] abonnements */
+.statut { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 3px; border: 1px solid; }
+.statut-actif { color: #2b8a3e; border-color: #2b8a3e; background: #ebfbee; }
+.statut-expire { color: var(--ink-2); border-color: var(--line-strong); background: var(--bg); }
+.statut-a_venir { color: var(--accent-dark); border-color: var(--accent); background: #fff4e6; }
+.mes-abonnements { margin-top: 32px; max-width: 760px; }
+.section-sous-titre { font-size: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-sous-titre svg { color: var(--accent); }
+.abonnement-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.abonnement-carte { padding: 16px; }
+.abonnement-carte p { margin: 4px 0 0; }
+.abonnement-actif { border-color: var(--accent); border-width: 2px; }
+.abonnement-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.abonnement-prix { font-family: var(--font-display); font-size: 24px; font-weight: 700; }

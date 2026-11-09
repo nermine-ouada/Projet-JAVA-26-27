@@ -25,6 +25,7 @@ export default function Layout() {
             {/* [eya] salles, cours */}
 
             {/* [nermine] abonnements */}
+            {estAdmin && <NavLink to="/abonnements">Abonnements</NavLink>}
 
           </nav>
           <div className="user">
