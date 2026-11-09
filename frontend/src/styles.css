@@ -140,32 +140,45 @@ input:focus, select:focus {
 .auth-card { width: 100%; max-width: 380px; }
 .auth-card .small { margin-top: 20px; }
 
-/* ===== Barre du haut ===== */
-.topbar { background: var(--dark); color: #f6f4ef; }
-.topbar-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 58px;
+/* ===== Tableau de bord : menu lateral ===== */
+.dashboard { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.sidebar { background: var(--dark); color: #f6f4ef; }
+.sidebar-inner {
+  position: sticky;
+  top: 0;
+  height: 100vh;
   display: flex;
-  align-items: center;
-  gap: 32px;
+  flex-direction: column;
+  padding: 22px 14px;
 }
-.nav { display: flex; gap: 4px; height: 100%; }
-.nav a {
+.sidebar-brand { padding: 0 10px; margin-bottom: 28px; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav a {
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border-left: 3px solid transparent;
   color: #b6b0a3;
   text-decoration: none;
   font-weight: 500;
-  border-bottom: 3px solid transparent;
-  border-top: 3px solid transparent;
 }
-.nav a:hover { color: #fff; }
-.nav a.active { color: #fff; border-bottom-color: var(--accent); }
-.user { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.sidebar-nav a:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+.sidebar-nav a.active { color: #fff; background: rgba(255, 255, 255, 0.08); border-left-color: var(--accent); }
+.sidebar-nav a.active svg { color: var(--accent); }
+.sidebar-user {
+  margin-top: auto;
+  padding: 16px 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sidebar-user-info { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .user-name { font-weight: 500; }
+.sidebar-logout { justify-content: flex-start; padding: 0; height: 32px; color: #b6b0a3; }
+.sidebar-logout:hover { color: #fff; border-color: transparent; }
 
 .badge {
   font-size: 11px;
@@ -286,9 +299,15 @@ input:focus, select:focus {
   .auth-foot { display: none; }
   .auth-main { align-items: flex-start; padding: 32px 16px; }
 
-  .topbar-inner { padding: 0 16px; gap: 12px; flex-wrap: wrap; height: auto; padding-top: 10px; }
-  .nav { order: 3; width: 100%; height: 42px; margin-left: -12px; }
-  .user-name { display: none; }
+  /* Sur telephone, le menu lateral devient une barre en haut */
+  .dashboard { grid-template-columns: 1fr; }
+  .sidebar-inner { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 12px 16px; gap: 8px; }
+  .sidebar-brand { margin-bottom: 0; padding: 0; }
+  .sidebar-user { margin: 0 0 0 auto; padding: 0; border-top: none; flex-direction: row; align-items: center; }
+  .sidebar-user-info .user-name { display: none; }
+  .sidebar-nav { order: 3; width: 100%; flex-direction: row; overflow-x: auto; }
+  .sidebar-nav a { padding: 8px 10px; white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; border-radius: 0; }
+  .sidebar-nav a.active { border-bottom-color: var(--accent); background: none; }
 
   .page { padding: 24px 16px 48px; }
   h1 { font-size: 26px; }
