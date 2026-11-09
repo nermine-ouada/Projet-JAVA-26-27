@@ -59,6 +59,24 @@ Le role (ADMIN / COACH / ADHERENT) est deduit de la table qui contient l'utilisa
 - L'admin ne peut pas supprimer son propre compte.
 
 <!-- [eya] salles, cours -->
+### Salles et cours (branche eya)
+
+| Methode | URL            | Acces    | Corps JSON |
+|---------|----------------|----------|------------|
+| GET     | /salles        | connecte | aucun |
+| GET     | /salles/{id}   | connecte | aucun |
+| POST    | /salles        | ADMIN    | `{"nom":"Salle Boxe","capacite":15}` |
+| PUT     | /salles/{id}   | ADMIN    | `{"nom":"Salle Boxe","capacite":18}` |
+| DELETE  | /salles/{id}   | ADMIN    | aucun (409 si des cours y sont programmes) |
+| GET     | /cours         | connecte | aucun |
+| GET     | /cours/{id}    | connecte | aucun |
+| POST    | /cours         | ADMIN    | `{"nomCours":"Boxe","dateCours":"2026-11-20","heure":"18:00","capacite":10,"coachId":1,"salleId":1}` |
+| PUT     | /cours/{id}    | ADMIN    | meme corps que POST |
+| DELETE  | /cours/{id}    | ADMIN    | aucun |
+| GET     | /coachs        | connecte | aucun (liste pour le formulaire de cours) |
+
+- `coachId` est l'id de la table `coach` (voir `GET /coachs`).
+- La capacite d'un cours ne peut pas depasser celle de sa salle.
 
 <!-- [nermine] abonnements -->
 

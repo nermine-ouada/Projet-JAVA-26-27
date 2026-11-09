@@ -395,5 +395,19 @@ a.btn { text-decoration: none; }
 
 /* ===== Styles des fonctionnalites (chaque branche ajoute sous sa ligne) ===== */
 /* [eya] salles, cours */
+.inline-icon { display: inline-flex; align-items: center; gap: 6px; }
+.jour { margin-bottom: 24px; }
+.jour-titre { font-size: 18px; margin-bottom: 10px; text-transform: capitalize; }
+.cours-ligne { display: flex; align-items: center; gap: 20px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.cours-ligne:last-child { border-bottom: none; }
+.cours-heure { display: inline-flex; align-items: center; gap: 6px; min-width: 76px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent-dark); }
+.cours-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.cours-details { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; margin: 0; }
+.cours-details span { display: inline-flex; align-items: center; gap: 5px; }
+.cours-ligne .actions { display: flex; gap: 6px; }
+@media (max-width: 760px) {
+  .cours-ligne { gap: 12px; padding: 12px 14px; align-items: flex-start; }
+  .cours-heure { min-width: 60px; }
+}
 
 /* [nermine] abonnements */

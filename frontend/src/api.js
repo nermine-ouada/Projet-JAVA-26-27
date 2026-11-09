@@ -68,4 +68,18 @@ export const deleteUtilisateur = (id) => request('/utilisateurs/' + id, 'DELETE'
 
 // ---------- [eya] Salles, Cours ----------
 
+export const getSalles = () => request('/salles')
+export const getSalle = (id) => request('/salles/' + id)
+export const createSalle = (salle) => request('/salles', 'POST', salle)
+export const updateSalle = (id, salle) => request('/salles/' + id, 'PUT', salle)
+export const deleteSalle = (id) => request('/salles/' + id, 'DELETE')
+
+export const getAllCours = () => request('/cours')
+export const getCours = (id) => request('/cours/' + id)
+export const createCours = (cours) => request('/cours', 'POST', cours)
+export const updateCours = (id, cours) => request('/cours/' + id, 'PUT', cours)
+export const deleteCours = (id) => request('/cours/' + id, 'DELETE')
+
+export const getCoachs = () => request('/coachs')
+
 // ---------- [nermine] Abonnements ----------

@@ -7,6 +7,8 @@ import Register from './pages/Register'
 import Profil from './pages/Profil'
 import Utilisateurs from './pages/Utilisateurs'
 // [eya] salles, cours
+import Salles from './pages/Salles'
+import Planning from './pages/Planning'
 
 // [nermine] abonnements
 
@@ -35,6 +37,8 @@ export default function App() {
         <Route path="/profil" element={<Profil />} />
         <Route path="/utilisateurs" element={<AdminSeulement><Utilisateurs /></AdminSeulement>} />
         {/* [eya] salles, cours */}
+        <Route path="/planning" element={<Planning />} />
+        <Route path="/salles" element={<Salles />} />
 
         {/* [nermine] abonnements */}
 
