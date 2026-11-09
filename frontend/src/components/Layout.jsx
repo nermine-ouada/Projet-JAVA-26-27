@@ -1,4 +1,5 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Dumbbell, LogOut } from 'lucide-react'
 import { useAuth } from '../AuthContext'
 
 const ROLES = { ADMIN: 'Admin', COACH: 'Coach', ADHERENT: 'Adhérent' }
@@ -10,24 +11,28 @@ export default function Layout() {
 
   async function deconnexion() {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   return (
     <>
       <header className="topbar">
         <div className="topbar-inner">
-          <span className="brand">Club Atlas</span>
+          <Link to="/" className="brand brand-icon"><Dumbbell size={20} /> Club Atlas</Link>
           <nav className="nav">
-            <NavLink to="/" end>Mon profil</NavLink>
+            <NavLink to="/profil">Mon profil</NavLink>
             {estAdmin && <NavLink to="/utilisateurs">Utilisateurs</NavLink>}
+            {/* [eya] salles, cours */}
+
+            {/* [nermine] abonnements */}
+
           </nav>
           <div className="user">
             <span className="user-name">{utilisateur.prenom} {utilisateur.nom}</span>
             <span className={'badge badge-' + utilisateur.role.toLowerCase()}>
               {ROLES[utilisateur.role]}
             </span>
-            <button className="btn btn-ghost" onClick={deconnexion}>Déconnexion</button>
+            <button className="btn btn-ghost" onClick={deconnexion}><LogOut size={16} /> Déconnexion</button>
           </div>
         </div>
       </header>

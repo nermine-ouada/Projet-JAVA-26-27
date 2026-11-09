@@ -8,12 +8,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import com.sun.net.httpserver.HttpExchange;
-import tn.enicarthage.gestionSalleDeSport.controller.AuthController;
-import tn.enicarthage.gestionSalleDeSport.controller.UtilisateurController;
-import tn.enicarthage.gestionSalleDeSport.dto.LoginRequest;
-import tn.enicarthage.gestionSalleDeSport.dto.RegisterRequest;
-import tn.enicarthage.gestionSalleDeSport.dto.UtilisateurRequest;
-import tn.enicarthage.gestionSalleDeSport.dto.UtilisateurResponse;
+// Imports avec * : un nouveau controller ou DTO est utilisable sans modifier cette liste
+import tn.enicarthage.gestionSalleDeSport.controller.*;
+import tn.enicarthage.gestionSalleDeSport.dto.*;
 import tn.enicarthage.gestionSalleDeSport.exception.ConflictException;
 import tn.enicarthage.gestionSalleDeSport.exception.ForbiddenException;
 import tn.enicarthage.gestionSalleDeSport.exception.ResourceNotFoundException;
@@ -27,6 +24,8 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 public class Router {
 
@@ -34,13 +33,19 @@ public class Router {
     private record Reponse(int statut, String corps) {
     }
 
-    // Gson configure pour gerer LocalDate / LocalDateTime (format ISO)
+    // Gson configure pour gerer LocalDate / LocalTime / LocalDateTime (format ISO)
+    // ex: "2026-11-20", "18:30", "2026-11-20T18:30"
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class,
                     (JsonSerializer<LocalDate>) (src, type, ctx) -> new JsonPrimitive(src.toString()))
             .registerTypeAdapter(LocalDate.class,
                     (JsonDeserializer<LocalDate>) (json, type, ctx) ->
                             json.isJsonNull() ? null : LocalDate.parse(json.getAsString()))
+            .registerTypeAdapter(LocalTime.class,
+                    (JsonSerializer<LocalTime>) (src, type, ctx) -> new JsonPrimitive(src.toString()))
+            .registerTypeAdapter(LocalTime.class,
+                    (JsonDeserializer<LocalTime>) (json, type, ctx) ->
+                            json.isJsonNull() ? null : LocalTime.parse(json.getAsString()))
             .registerTypeAdapter(LocalDateTime.class,
                     (JsonSerializer<LocalDateTime>) (src, type, ctx) -> new JsonPrimitive(src.toString()))
             .registerTypeAdapter(LocalDateTime.class,
@@ -50,6 +55,10 @@ public class Router {
 
     private final AuthController authController = new AuthController();
     private final UtilisateurController utilisateurController = new UtilisateurController();
+    // [eya] salles, cours
+
+    // [nermine] abonnements
+
 
     // Point d'entree unique pour toutes les requetes HTTP
     public void dispatcher(HttpExchange exchange) throws IOException {
@@ -78,7 +87,7 @@ public class Router {
         } catch (SQLIntegrityConstraintViolationException e) {
             // ex. supprimer un coach qui anime encore des cours
             envoyer(exchange, 409, messageErreur("Operation impossible : cet element est utilise ailleurs."));
-        } catch (IllegalArgumentException | JsonParseException e) {
+        } catch (IllegalArgumentException | JsonParseException | DateTimeParseException e) {
             envoyer(exchange, 400, messageErreur(e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +107,10 @@ public class Router {
                 return routesAuth(methode, segments, exchange);
             case "utilisateurs":
                 return routesUtilisateur(methode, segments, exchange);
-            // Ajoutez d'autres ressources ici : case "salles": ...
+            // [eya] salles, cours
+
+            // [nermine] abonnements
+
             default:
                 throw new ResourceNotFoundException("Route inconnue : /" + segments[1]);
         }
@@ -204,6 +216,12 @@ public class Router {
         utilisateurController.deleteUtilisateur(id, connecte.id());
         return new Reponse(204, "");
     }
+
+    // =========================================================
+    // [eya] Routes salles, cours
+
+    // =========================================================
+    // [nermine] Routes abonnements
 
     // ---------------------------------------------------------
     // Outils

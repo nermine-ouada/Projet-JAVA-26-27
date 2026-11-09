@@ -58,6 +58,10 @@ Le role (ADMIN / COACH / ADHERENT) est deduit de la table qui contient l'utilisa
 - En modification, `motDePasse` vide = mot de passe inchange.
 - L'admin ne peut pas supprimer son propre compte.
 
+<!-- [eya] salles, cours -->
+
+<!-- [nermine] abonnements -->
+
 ## Codes HTTP
 
 | Code | Cas |

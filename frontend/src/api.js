@@ -65,3 +65,7 @@ export const getUtilisateur = (id) => request('/utilisateurs/' + id)
 export const createUtilisateur = (utilisateur) => request('/utilisateurs', 'POST', utilisateur)
 export const updateUtilisateur = (id, utilisateur) => request('/utilisateurs/' + id, 'PUT', utilisateur)
 export const deleteUtilisateur = (id) => request('/utilisateurs/' + id, 'DELETE')
+
+// ---------- [eya] Salles, Cours ----------
+
+// ---------- [nermine] Abonnements ----------
