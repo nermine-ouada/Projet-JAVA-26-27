@@ -4,8 +4,6 @@ import tn.enicarthage.gestionSalleDeSport.dao.SessionDao;
 import tn.enicarthage.gestionSalleDeSport.dao.UtilisateurDao;
 import tn.enicarthage.gestionSalleDeSport.dto.AuthResponse;
 import tn.enicarthage.gestionSalleDeSport.dto.LoginRequest;
-import tn.enicarthage.gestionSalleDeSport.dto.RegisterRequest;
-import tn.enicarthage.gestionSalleDeSport.dto.UtilisateurRequest;
 import tn.enicarthage.gestionSalleDeSport.dto.UtilisateurResponse;
 import tn.enicarthage.gestionSalleDeSport.exception.UnauthorizedException;
 import tn.enicarthage.gestionSalleDeSport.model.Utilisateur;
@@ -31,14 +29,6 @@ public class AuthService {
             throw new UnauthorizedException("Email ou mot de passe incorrect.");
         }
         return ouvrirSession(utilisateur.getId());
-    }
-
-    // Inscription publique : cree toujours un ADHERENT (memes validations que le CRUD)
-    public AuthResponse register(RegisterRequest r) throws SQLException {
-        UtilisateurResponse cree = utilisateurService.createUtilisateur(
-                new UtilisateurRequest(r.nom(), r.prenom(), r.email(), r.motDePasse(), "ADHERENT",
-                        null, null, null));
-        return ouvrirSession(cree.id());
     }
 
     // Changer la photo de l'utilisateur connecte

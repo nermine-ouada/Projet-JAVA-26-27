@@ -54,7 +54,6 @@ async function request(chemin, methode = 'GET', corps) {
 // ---------- Auth ----------
 
 export const login = (email, motDePasse) => request('/auth/login', 'POST', { email, motDePasse })
-export const register = (utilisateur) => request('/auth/register', 'POST', utilisateur)
 export const logout = () => request('/auth/logout', 'POST')
 export const getMe = () => request('/auth/me')
 // Photo de l'utilisateur connecte : image en texte (data URL), ou '' pour la retirer
