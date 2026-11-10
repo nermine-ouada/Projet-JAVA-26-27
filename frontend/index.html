@@ -1,15 +1,14 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Club Atlas, salle de sport</title>
     <script>
-      // Applique le theme choisi avant l'affichage (evite un flash clair puis sombre)
-      try {
-        var t = localStorage.getItem('club-atlas-theme')
-        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t)
-      } catch (e) {}
+      // Applique le theme avant l'affichage : clair par defaut, sombre ou auto si choisi
+      var t = 'light'
+      try { t = localStorage.getItem('club-atlas-theme') || 'light' } catch (e) {}
+      document.documentElement.setAttribute('data-theme', t === 'dark' || t === 'auto' ? t : 'light')
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash2, Search, Phone, Mail, Dumbbell, Users } from 'lucide-react'
+import { Search, Dumbbell, Users } from 'lucide-react'
 import { getUtilisateurs, createUtilisateur, updateUtilisateur, deleteUtilisateur } from '../api'
-import { ROLES } from '../roles'
 import Modal from '../components/Modal'
 import Avatar from '../components/Avatar'
 import PhotoInput from '../components/PhotoInput'
@@ -114,7 +113,7 @@ export default function Personnes({ role }) {
               onChange={(e) => setRecherche(e.target.value)} aria-label="Rechercher" />
           </label>
           <button className="btn btn-primary" onClick={() => ouvrir(null)}>
-            <Plus size={16} aria-hidden="true" /> {config.ajouter}
+            {config.ajouter}
           </button>
         </div>
       </div>
@@ -131,36 +130,45 @@ export default function Personnes({ role }) {
         <EmptyState icone={Search} titre="Aucun résultat.">Essayez un autre nom ou un autre email.</EmptyState>
       )}
 
-      <div className="grid-cards stagger">
-        {affichees.map((p, i) => (
-          <article key={p.id} className="ucard" style={{ '--i': i }}>
-            <div className="ucard-head">
-              <Avatar personne={p} />
-              <div>
-                <div className="ucard-title">{p.prenom} {p.nom}</div>
-                <div className="ucard-sub">{p.email}</div>
-              </div>
-            </div>
-            <div className="chips">
-              {p.specialite && <span className="chip"><Dumbbell size={12} aria-hidden="true" /> {p.specialite}</span>}
-              {p.telephone && <span className="chip"><Phone size={12} aria-hidden="true" /> {p.telephone}</span>}
-              {!p.specialite && !p.telephone && <span className="chip"><Mail size={12} aria-hidden="true" /> Email seulement</span>}
-            </div>
-            <div className="ucard-foot">
-              <span className={'badge badge-' + p.role.toLowerCase()}>{ROLES[p.role]}</span>
-              <div className="ucard-actions">
-                <button className="btn btn-small" onClick={() => ouvrir(p)} aria-label={'Modifier ' + p.prenom}>
-                  <Pencil size={14} aria-hidden="true" /> Modifier
-                </button>
-                <button className="btn btn-small btn-danger-ghost" aria-label={'Supprimer ' + p.prenom}
-                  onClick={() => { setErreurForm(''); setASupprimer(p) }}>
-                  <Trash2 size={14} aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+      {/* L'effectif : un tableau, comme la liste affichee a l'accueil d'une salle */}
+      {affichees.length > 0 && (
+        <div className="card">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>{role === 'COACH' ? 'Coach' : 'Adhérent'}</th>
+                {role === 'COACH' && <th>Spécialité</th>}
+                <th className="hide-sm">Téléphone</th>
+                <th className="actions"></th>
+              </tr>
+            </thead>
+            <tbody className="stagger">
+              {affichees.map((p, i) => (
+                <tr key={p.id} style={{ '--i': i }}>
+                  <td>
+                    <div className="personne-cell">
+                      <Avatar personne={p} />
+                      <div>
+                        <div className="personne-nom">{p.prenom} {p.nom}</div>
+                        <div className="personne-email">{p.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  {role === 'COACH' && <td>{p.specialite || <span className="muted">Non renseignée</span>}</td>}
+                  <td className="hide-sm">{p.telephone || <span className="muted">Non renseigné</span>}</td>
+                  <td className="actions">
+                    <button className="btn btn-small" onClick={() => ouvrir(p)} aria-label={'Modifier ' + p.prenom}>Modifier</button>
+                    <button className="btn btn-small btn-danger-ghost" aria-label={'Supprimer ' + p.prenom}
+                      onClick={() => { setErreurForm(''); setASupprimer(p) }}>
+                      Supprimer
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {edition && (
         <Modal titre={edition.id ? 'Modifier ' + config.un : config.ajouter} onClose={() => setEdition(null)}>
