@@ -36,8 +36,14 @@ public class AuthService {
     // Inscription publique : cree toujours un ADHERENT (memes validations que le CRUD)
     public AuthResponse register(RegisterRequest r) throws SQLException {
         UtilisateurResponse cree = utilisateurService.createUtilisateur(
-                new UtilisateurRequest(r.nom(), r.prenom(), r.email(), r.motDePasse(), "ADHERENT"));
+                new UtilisateurRequest(r.nom(), r.prenom(), r.email(), r.motDePasse(), "ADHERENT",
+                        null, null, null));
         return ouvrirSession(cree.id());
+    }
+
+    // Changer la photo de l'utilisateur connecte
+    public UtilisateurResponse updateMaPhoto(int utilisateurId, String photo) throws SQLException {
+        return utilisateurService.updatePhoto(utilisateurId, photo);
     }
 
     public void logout(String token) throws SQLException {

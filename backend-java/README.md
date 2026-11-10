@@ -14,6 +14,8 @@ Main -> ApiServer -> Router -> Controller -> Service -> DAO -> DatabaseConnectio
 2. Creer la base : executer `src/main/resources/database/database.sql`
    (phpMyAdmin > Importer, ou lancer `config/DatabaseConnection.main()` dans IntelliJ).
    Attention : le script commence par `DROP DATABASE gestion_salle_sport`.
+   Base deja creee ? Executer plutot les fichiers de `src/main/resources/database/migrations/`
+   (ajouts sans perte de donnees).
 3. Lancer `tn.enicarthage.gestionSalleDeSport.Main` (ou `mvn compile exec:java`).
 4. API disponible sur `http://localhost:8081`.
 
@@ -48,15 +50,20 @@ Le role (ADMIN / COACH / ADHERENT) est deduit de la table qui contient l'utilisa
 | POST    | /auth/login         | public   | `{"email":"admin@fitness.tn","motDePasse":"admin123"}` |
 | GET     | /auth/me            | connecte | aucun |
 | POST    | /auth/logout        | connecte | aucun |
+| PUT     | /auth/photo         | connecte | `{"photo":"data:image/jpeg;base64,..."}` ou `{"photo":""}` pour la retirer |
 | GET     | /utilisateurs       | ADMIN    | aucun |
 | GET     | /utilisateurs/{id}  | ADMIN    | aucun |
-| POST    | /utilisateurs       | ADMIN    | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":"secret1","role":"COACH"}` |
-| PUT     | /utilisateurs/{id}  | ADMIN    | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":""}` |
+| POST    | /utilisateurs       | ADMIN    | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":"secret1","role":"COACH","telephone":"22000000","specialite":"Boxe","photo":"data:image/..."}` |
+| PUT     | /utilisateurs/{id}  | ADMIN    | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":"","telephone":"22000000","specialite":"Boxe"}` |
 | DELETE  | /utilisateurs/{id}  | ADMIN    | aucun |
+| GET     | /coachs             | connecte | aucun (id de la table coach, nom, specialite, photo) |
 
 - `role` : `ADMIN`, `COACH` ou `ADHERENT` (fixe a la creation, ignore en modification).
-- En modification, `motDePasse` vide = mot de passe inchange.
+- `telephone`, `specialite` (coach) et `photo` sont facultatifs.
+- En modification, `motDePasse` vide = mot de passe inchange ; `photo` absente = inchangee, `""` = retiree.
+- La photo est une image en base64 ; le frontend la reduit a 256 x 256 px avant l'envoi (limite : ~500 Ko).
 - L'admin ne peut pas supprimer son propre compte.
+- Un champ vide est renvoye en `null` (ex. `"photo": null`).
 
 <!-- [eya] salles, cours -->
 

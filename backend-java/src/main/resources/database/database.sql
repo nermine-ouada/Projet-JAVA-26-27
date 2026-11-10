@@ -15,6 +15,7 @@ CREATE TABLE utilisateur (
     prenom        VARCHAR(100) NOT NULL,
     email         VARCHAR(150) NOT NULL UNIQUE,
     mot_de_passe  VARCHAR(255) NOT NULL, -- format "sel:sha256(sel + mot_de_passe)"
+    photo         MEDIUMTEXT NULL,       -- image "data:image/jpeg;base64,..." (facultative)
     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -130,6 +131,12 @@ CREATE TABLE inscription_cours (
         REFERENCES cours(id) ON DELETE CASCADE
 );
 
+-- Tables ajoutees par chaque branche (chacune ecrit sous sa ligne)
+-- [eya] tables
+
+-- [nermine] tables
+
+
 -- =====================================================
 -- 5. DONNEES DE TEST
 -- Mots de passe hashes avec SHA2 (meme algorithme que PasswordUtil.java)
@@ -183,3 +190,8 @@ INSERT INTO inscription_cours (adherent_id, cours_id) VALUES
     (2, 2),
     (3, 1),
     (3, 3);
+
+-- Donnees de test ajoutees par chaque branche
+-- [eya] donnees
+
+-- [nermine] donnees

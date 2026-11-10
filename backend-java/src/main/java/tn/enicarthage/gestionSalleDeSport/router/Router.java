@@ -35,7 +35,9 @@ public class Router {
 
     // Gson configure pour gerer LocalDate / LocalTime / LocalDateTime (format ISO)
     // ex: "2026-11-20", "18:30", "2026-11-20T18:30"
+    // serializeNulls : un champ vide est renvoye en "photo": null au lieu de disparaitre du JSON
     private final Gson gson = new GsonBuilder()
+            .serializeNulls()
             .registerTypeAdapter(LocalDate.class,
                     (JsonSerializer<LocalDate>) (src, type, ctx) -> new JsonPrimitive(src.toString()))
             .registerTypeAdapter(LocalDate.class,
@@ -55,6 +57,7 @@ public class Router {
 
     private final AuthController authController = new AuthController();
     private final UtilisateurController utilisateurController = new UtilisateurController();
+    private final CoachController coachController = new CoachController();
     // [eya] salles, cours
 
     // [nermine] abonnements
@@ -97,7 +100,7 @@ public class Router {
         }
     }
 
-    // Dispatch par premiere ressource (/auth, /utilisateurs)
+    // Dispatch par premiere ressource (/auth, /utilisateurs, /coachs, ...)
     private Reponse router(String methode, String[] segments, HttpExchange exchange)
             throws IOException, SQLException {
         if (segments.length < 2 || segments[1].isBlank()) {
@@ -109,6 +112,8 @@ public class Router {
                 return routesAuth(methode, segments, exchange);
             case "utilisateurs":
                 return routesUtilisateur(methode, segments, exchange);
+            case "coachs":
+                return routesCoach(methode, segments, exchange);
             // [eya] salles, cours
 
             // [nermine] abonnements
@@ -124,6 +129,7 @@ public class Router {
     // POST /auth/login      (public)
     // POST /auth/logout     (connecte)
     // GET  /auth/me         (connecte)
+    // PUT  /auth/photo      (connecte) -> changer sa photo
     // ---------------------------------------------------------
     private Reponse routesAuth(String methode, String[] segments, HttpExchange exchange)
             throws IOException, SQLException {
@@ -135,6 +141,7 @@ public class Router {
             case "POST login":    return login(exchange);
             case "POST logout":   return logout(exchange);
             case "GET me":        return new Reponse(200, gson.toJson(getMe(exchange)));
+            case "PUT photo":     return updateMaPhoto(exchange);
             default:
                 throw new ResourceNotFoundException("Route inconnue : " + methode + " /auth/" + segments[2]);
         }
@@ -158,6 +165,26 @@ public class Router {
     // Utilisateur connecte (via le token). Leve 401 si pas connecte.
     private UtilisateurResponse getMe(HttpExchange exchange) throws SQLException {
         return authController.getMe(token(exchange));
+    }
+
+    private Reponse updateMaPhoto(HttpExchange exchange) throws IOException, SQLException {
+        UtilisateurResponse connecte = getMe(exchange);
+        PhotoRequest request = lireCorps(exchange, PhotoRequest.class);
+        return new Reponse(200, gson.toJson(authController.updateMaPhoto(connecte.id(), request.photo())));
+    }
+
+    // GET /coachs (connecte) -> getCoachs : choix d'un coach (cours, seances privees)
+    private Reponse routesCoach(String methode, String[] segments, HttpExchange exchange)
+            throws SQLException {
+        getMe(exchange);
+        if (segments.length == 2 && methode.equals("GET")) {
+            return getCoachs();
+        }
+        throw new ResourceNotFoundException("Route inconnue : " + methode + " " + String.join("/", segments));
+    }
+
+    private Reponse getCoachs() throws SQLException {
+        return new Reponse(200, gson.toJson(coachController.getCoachs()));
     }
 
     // ---------------------------------------------------------

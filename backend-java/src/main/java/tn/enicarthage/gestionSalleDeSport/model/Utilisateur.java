@@ -8,6 +8,9 @@ public class Utilisateur {
     private String email;
     private String motDePasse; // hash, jamais renvoye au client
     private String role;       // ADMIN, COACH ou ADHERENT
+    private String photo;      // image en "data:image/jpeg;base64,..." (ou null)
+    private String telephone;  // coach et adherent (table du role)
+    private String specialite; // coach seulement
 
     public Utilisateur() {
     }
@@ -33,4 +36,10 @@ public class Utilisateur {
     public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    public String getPhoto() { return photo; }
+    public void setPhoto(String photo) { this.photo = photo; }
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
+    public String getSpecialite() { return specialite; }
+    public void setSpecialite(String specialite) { this.specialite = specialite; }
 }

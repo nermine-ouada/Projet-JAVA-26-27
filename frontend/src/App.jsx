@@ -5,7 +5,8 @@ import Accueil from './pages/Accueil'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Profil from './pages/Profil'
-import Utilisateurs from './pages/Utilisateurs'
+import Dashboard from './pages/Dashboard'
+import Personnes from './pages/Personnes'
 // [eya] salles, cours
 
 // [nermine] abonnements
@@ -22,6 +23,12 @@ function AdminSeulement({ children }) {
   return estAdmin ? children : <Navigate to="/profil" replace />
 }
 
+// Page d'arrivee apres la connexion, selon le role
+function Espace() {
+  const { estAdmin } = useAuth()
+  return <Navigate to={estAdmin ? '/tableau-de-bord' : '/profil'} replace />
+}
+
 export default function App() {
   return (
     <Routes>
@@ -30,10 +37,13 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Espace connecte (barre du haut + page) */}
+      {/* Espace connecte (menu lateral + page) */}
       <Route element={<Protege><Layout /></Protege>}>
+        <Route path="/espace" element={<Espace />} />
         <Route path="/profil" element={<Profil />} />
-        <Route path="/utilisateurs" element={<AdminSeulement><Utilisateurs /></AdminSeulement>} />
+        <Route path="/tableau-de-bord" element={<AdminSeulement><Dashboard /></AdminSeulement>} />
+        <Route path="/adherents" element={<AdminSeulement><Personnes role="ADHERENT" /></AdminSeulement>} />
+        <Route path="/coachs" element={<AdminSeulement><Personnes role="COACH" /></AdminSeulement>} />
         {/* [eya] salles, cours */}
 
         {/* [nermine] abonnements */}

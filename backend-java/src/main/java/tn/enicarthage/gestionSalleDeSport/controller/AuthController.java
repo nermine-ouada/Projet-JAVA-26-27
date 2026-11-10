@@ -24,6 +24,10 @@ public class AuthController {
         authService.logout(token);
     }
 
+    public UtilisateurResponse updateMaPhoto(int utilisateurId, String photo) throws SQLException {
+        return authService.updateMaPhoto(utilisateurId, photo);
+    }
+
     public UtilisateurResponse getMe(String token) throws SQLException {
         return authService.getMe(token);
     }
