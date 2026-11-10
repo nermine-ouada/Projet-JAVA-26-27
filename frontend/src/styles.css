@@ -154,6 +154,9 @@ a.btn { text-decoration: none; }
 .form { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
 .form label { display: flex; flex-direction: column; gap: 6px; font-weight: 500; font-size: 13px; flex: 1; }
 .row { display: flex; gap: 12px; }
+/* Les champs d'une ligne peuvent retrecir (sinon un long select deborde de la fenetre) */
+.row > label { min-width: 0; }
+.row input, .row select { width: 100%; min-width: 0; }
 
 input, select, textarea {
   height: 40px;
