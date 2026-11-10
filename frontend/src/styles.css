@@ -762,7 +762,8 @@ input:focus, select:focus, textarea:focus {
   overflow: hidden;
   transition: border-color 0.15s, background-color 0.15s, transform 0.15s var(--ease);
 }
-.ccard::before { content: ''; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 3px; background: var(--accent); transform: skewX(-10deg); border-radius: 1px; }
+/* Petite marque inclinee a cote de l'heure (et non plus sur toute la hauteur de la carte) */
+.ccard::before { content: ''; position: absolute; left: 5px; top: 10px; height: 16px; width: 3px; background: var(--accent); transform: skewX(-10deg); border-radius: 1px; }
 .ccard:hover { border-color: var(--line-strong); background: var(--surface); transform: translateY(-1px); }
 .ccard.complet::before { background: var(--line-strong); }
 .ccard.inscrit { background: var(--success-bg); }
