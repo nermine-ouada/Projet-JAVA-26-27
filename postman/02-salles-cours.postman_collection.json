@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "02 Salles et Cours",
-    "description": "CRUD des salles et des cours (planning), liste des coachs. Lancer dans l'ordre (Runner).",
+    "name": "02 Salles, Cours et Inscriptions",
+    "description": "CRUD des salles et des cours (planning), cours repetes sur plusieurs semaines, inscriptions des adherents. Lancer dans l'ordre (Runner).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -55,7 +55,7 @@
           }
         },
         {
-          "name": "Login adherent",
+          "name": "Login adherent (Yassine)",
           "event": [
             {
               "listen": "test",
@@ -91,6 +91,141 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"yassine@mail.tn\",\n  \"motDePasse\": \"pass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login adherent 2 (Nour)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role ADHERENT\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"ADHERENT\"); });",
+                  "pm.collectionVariables.set(\"adherent2Token\", json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nour@mail.tn\",\n  \"motDePasse\": \"pass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login adherent 3 (Rania)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role ADHERENT\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"ADHERENT\"); });",
+                  "pm.collectionVariables.set(\"adherent3Token\", json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rania@mail.tn\",\n  \"motDePasse\": \"pass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login coach",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role COACH\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"COACH\"); });",
+                  "pm.collectionVariables.set(\"coachToken\", json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sami.coach@fitness.tn\",\n  \"motDePasse\": \"coach123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -509,7 +644,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
-                  "pm.test(\"Tableau\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                  "const json = pm.response.json();",
+                  "pm.test(\"Chaque cours indique ses inscrits\", function () { pm.expect(json).to.be.an(\"array\"); json.forEach(function (c) { pm.expect(c).to.have.property(\"inscrits\"); pm.expect(c).to.have.property(\"inscrit\"); }); });"
                 ]
               }
             }
@@ -543,7 +679,7 @@
                 "exec": [
                   "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
                   "const json = pm.response.json();",
-                  "pm.test(\"Noms du coach et de la salle remplis\", function () { pm.expect(json.coachNom).to.be.a(\"string\"); pm.expect(json.salleNom).to.eql(\"Salle Postman\"); });",
+                  "pm.test(\"Coach, salle et 0 inscrit\", function () { pm.expect(json.coachNom).to.be.a(\"string\"); pm.expect(json.salleNom).to.eql(\"Salle Postman\"); pm.expect(json.inscrits).to.eql(0); });",
                   "pm.test(\"Heure au format HH:MM\", function () { pm.expect(json.heure).to.eql(\"18:00\"); });",
                   "pm.collectionVariables.set(\"coursId\", json.id);"
                 ]
@@ -574,6 +710,52 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nomCours\": \"Cours Postman\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"18:00\",\n  \"capacite\": 10,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer dans une salle deja occupee (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Doublon\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"18:00\",\n  \"capacite\": 5,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -619,7 +801,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nomCours\": \"Cours Postman\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"18:00\",\n  \"capacite\": 99,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
+              "raw": "{\n  \"nomCours\": \"Cours Postman\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"20:00\",\n  \"capacite\": 99,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -665,7 +847,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nomCours\": \"Cours Postman\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"18:00\",\n  \"capacite\": 5,\n  \"coachId\": 999999,\n  \"salleId\": {{salleId}}\n}",
+              "raw": "{\n  \"nomCours\": \"Cours Postman\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"20:00\",\n  \"capacite\": 5,\n  \"coachId\": 999999,\n  \"salleId\": {{salleId}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -845,7 +1027,780 @@
               }
             }
           }
+        }
+      ]
+    },
+    {
+      "name": "5. Planifier sur plusieurs semaines",
+      "item": [
+        {
+          "name": "Creer un cours repete 3 semaines",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Premier cours le 7 decembre\", function () { pm.expect(pm.response.json().dateCours).to.eql(\"2026-12-07\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Cours Postman Repete\",\n  \"dateCours\": \"2026-12-07\",\n  \"heure\": \"07:00\",\n  \"capacite\": 8,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}},\n  \"semaines\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
         },
+        {
+          "name": "Verifier les 3 semaines",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const repetes = pm.response.json().filter(function (c) { return c.nomCours === \"Cours Postman Repete\"; });",
+                  "pm.test(\"3 cours, une semaine d'ecart\", function () { pm.expect(repetes.map(function (c) { return c.dateCours; })).to.eql([\"2026-12-07\", \"2026-12-14\", \"2026-12-21\"]); });",
+                  "pm.collectionVariables.set(\"coursRepetesIds\", JSON.stringify(repetes.map(function (c) { return c.id; })));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Repeter sur 13 semaines (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Trop\",\n  \"dateCours\": \"2027-01-04\",\n  \"heure\": \"18:00\",\n  \"capacite\": 8,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}},\n  \"semaines\": 13\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Supprimer les cours repetes (nettoyage)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const ids = JSON.parse(pm.collectionVariables.get(\"coursRepetesIds\"));",
+                  "ids.forEach(function (id) {",
+                  "  pm.sendRequest({ url: pm.variables.get(\"baseUrl\") + \"/cours/\" + id, method: \"DELETE\", header: { Authorization: \"Bearer \" + pm.collectionVariables.get(\"adminToken\") } }, function (err, res) {",
+                  "    pm.test(\"Cours \" + id + \" supprime\", function () { pm.expect(err).to.eql(null); pm.expect(res.code).to.eql(204); });",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "description": "Le script de test supprime les 3 cours crees ci-dessus."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Inscriptions aux cours",
+      "item": [
+        {
+          "name": "Cours de 2 places pour les tests",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"coursInscId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Cours Postman 2 places\",\n  \"dateCours\": \"2026-12-03\",\n  \"heure\": \"10:00\",\n  \"capacite\": 2,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yassine s'inscrit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Inscrit, 1 place prise\", function () { pm.expect(json.inscrit).to.eql(true); pm.expect(json.inscrits).to.eql(1); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Yassine s'inscrit une 2e fois (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Le cours indique \"inscrit\" pour Yassine",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"inscrit = true\", function () { pm.expect(pm.response.json().inscrit).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Nour s'inscrit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rania : cours complet (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Message complet\", function () { pm.expect(pm.response.json().erreur).to.include(\"complet\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent3Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "L'admin ne peut pas s'inscrire (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Participants (coach)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"2 inscrits avec leur nom\", function () { const json = pm.response.json(); pm.expect(json).to.have.lengthOf(2); pm.expect(json[0].prenom).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/participants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "participants"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Participants en adherent (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/participants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "participants"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reduire la capacite sous les inscrits (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Cours Postman 2 places\",\n  \"dateCours\": \"2026-12-03\",\n  \"heure\": \"10:00\",\n  \"capacite\": 1,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Yassine annule son inscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Annuler une 2e fois (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Une place s'est liberee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"1 inscrit, Yassine n'est plus inscrit\", function () { pm.expect(json.inscrits).to.eql(1); pm.expect(json.inscrit).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cours deja passe pour les tests",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"coursPasseId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Cours Postman passe\",\n  \"dateCours\": \"2026-01-05\",\n  \"heure\": \"10:00\",\n  \"capacite\": 5,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "S'inscrire a un cours passe (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursPasseId}}/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursPasseId}}",
+                "inscription"
+              ]
+            }
+          }
+        },
+        {
+          "name": "S'inscrire a un cours inexistant (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/999999/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "999999",
+                "inscription"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Nettoyage",
+      "item": [
         {
           "name": "Supprimer la salle du cours (409)",
           "event": [
@@ -876,6 +1831,72 @@
               "path": [
                 "salles",
                 "{{salleId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Supprimer le cours (et ses inscriptions)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursInscId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursInscId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Supprimer le cours passe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursPasseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursPasseId}}"
               ]
             }
           }
@@ -947,7 +1968,7 @@
           }
         },
         {
-          "name": "Supprimer la salle (nettoyage)",
+          "name": "Supprimer la salle",
           "event": [
             {
               "listen": "test",
@@ -982,7 +2003,7 @@
       ]
     },
     {
-      "name": "5. Deconnexion",
+      "name": "8. Deconnexion",
       "item": [
         {
           "name": "Logout adherent",
@@ -1003,6 +2024,105 @@
               {
                 "key": "Authorization",
                 "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout adherent 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout adherent 3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent3Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout coach",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
               }
             ],
             "url": {
@@ -1067,6 +2187,18 @@
       "value": ""
     },
     {
+      "key": "adherent2Token",
+      "value": ""
+    },
+    {
+      "key": "adherent3Token",
+      "value": ""
+    },
+    {
+      "key": "coachToken",
+      "value": ""
+    },
+    {
       "key": "salleId",
       "value": ""
     },
@@ -1076,6 +2208,18 @@
     },
     {
       "key": "coursId",
+      "value": ""
+    },
+    {
+      "key": "coursRepetesIds",
+      "value": ""
+    },
+    {
+      "key": "coursInscId",
+      "value": ""
+    },
+    {
+      "key": "coursPasseId",
       "value": ""
     }
   ]

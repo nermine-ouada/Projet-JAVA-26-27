@@ -6,6 +6,7 @@ import { useAuth } from '../AuthContext'
 import Avatar from '../components/Avatar'
 import Loader from '../components/Loader'
 // [eya] tuiles
+import TuileCours from '../components/TuileCours'
 
 // [nermine] tuiles
 
@@ -53,6 +54,7 @@ export default function Dashboard() {
               <span className="tile-sub">dans l'équipe</span>
             </Link>
             {/* [eya] tuiles */}
+            <TuileCours />
 
             {/* [nermine] tuiles */}
 

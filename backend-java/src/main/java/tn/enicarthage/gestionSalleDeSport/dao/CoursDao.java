@@ -10,22 +10,43 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CoursDao {
 
-    // Jointure pour recuperer le nom du coach et de la salle
+    // Jointure pour recuperer le coach (nom, photo) et la salle,
+    // + sous-requete qui compte les inscrits de chaque cours
     private static final String SELECT = """
             SELECT co.id, co.nom_cours, co.date_cours, co.heure, co.capacite,
                    co.coach_id, co.salle_id,
                    CONCAT(u.prenom, ' ', u.nom) AS coach_nom,
-                   s.nom AS salle_nom
+                   u.photo AS coach_photo,
+                   c.utilisateur_id AS coach_utilisateur_id,
+                   s.nom AS salle_nom,
+                   (SELECT COUNT(*) FROM inscription_cours ic WHERE ic.cours_id = co.id) AS inscrits
             FROM cours co
             JOIN coach c ON c.id = co.coach_id
             JOIN utilisateur u ON u.id = c.utilisateur_id
             JOIN salle s ON s.id = co.salle_id
             """;
+
+    // Un autre cours occupe-t-il deja la salle a cette date et cette heure ? (sauf le cours "exclu")
+    public boolean existeCreneau(int salleId, LocalDate date, LocalTime heure, int coursExcluId) throws SQLException {
+        String sql = "SELECT 1 FROM cours WHERE salle_id = ? AND date_cours = ? AND heure = ? AND id <> ?";
+        try (Connection cnx = DatabaseConnection.getConnection();
+             PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, salleId);
+            ps.setDate(2, Date.valueOf(date));
+            ps.setTime(3, Time.valueOf(heure));
+            ps.setInt(4, coursExcluId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 
     public List<Cours> getAllCours() throws SQLException {
         List<Cours> liste = new ArrayList<>();
@@ -102,7 +123,10 @@ public class CoursDao {
         cours.setCoachId(rs.getInt("coach_id"));
         cours.setSalleId(rs.getInt("salle_id"));
         cours.setCoachNom(rs.getString("coach_nom"));
+        cours.setCoachPhoto(rs.getString("coach_photo"));
+        cours.setCoachUtilisateurId(rs.getInt("coach_utilisateur_id"));
         cours.setSalleNom(rs.getString("salle_nom"));
+        cours.setInscrits(rs.getInt("inscrits"));
         return cours;
     }
 }

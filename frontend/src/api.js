@@ -86,4 +86,9 @@ export const createCours = (cours) => request('/cours', 'POST', cours)
 export const updateCours = (id, cours) => request('/cours/' + id, 'PUT', cours)
 export const deleteCours = (id) => request('/cours/' + id, 'DELETE')
 
+// Inscription de l'adherent connecte a un cours, et liste des inscrits (admin, coach)
+export const inscrireCours = (id) => request('/cours/' + id + '/inscription', 'POST')
+export const desinscrireCours = (id) => request('/cours/' + id + '/inscription', 'DELETE')
+export const getParticipants = (id) => request('/cours/' + id + '/participants')
+
 // ---------- [nermine] Abonnements ----------

@@ -11,12 +11,12 @@ public class CoursController {
 
     private final CoursService coursService = new CoursService();
 
-    public List<Cours> getAllCours() throws SQLException {
-        return coursService.getAllCours();
+    public List<Cours> getAllCours(int utilisateurId) throws SQLException {
+        return coursService.getAllCours(utilisateurId);
     }
 
-    public Cours getCours(int id) throws SQLException {
-        return coursService.getCours(id);
+    public Cours getCours(int id, int utilisateurId) throws SQLException {
+        return coursService.getCours(id, utilisateurId);
     }
 
     public Cours createCours(CoursRequest request) throws SQLException {

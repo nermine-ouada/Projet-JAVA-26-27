@@ -2,8 +2,10 @@ package tn.enicarthage.gestionSalleDeSport.service;
 
 import tn.enicarthage.gestionSalleDeSport.dao.CoachDao;
 import tn.enicarthage.gestionSalleDeSport.dao.CoursDao;
+import tn.enicarthage.gestionSalleDeSport.dao.InscriptionDao;
 import tn.enicarthage.gestionSalleDeSport.dao.SalleDao;
 import tn.enicarthage.gestionSalleDeSport.dto.CoursRequest;
+import tn.enicarthage.gestionSalleDeSport.exception.ConflictException;
 import tn.enicarthage.gestionSalleDeSport.exception.ResourceNotFoundException;
 import tn.enicarthage.gestionSalleDeSport.model.Coach;
 import tn.enicarthage.gestionSalleDeSport.model.Cours;
@@ -11,38 +13,73 @@ import tn.enicarthage.gestionSalleDeSport.model.Salle;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 public class CoursService {
+
+    private static final int SEMAINES_MAX = 12;
 
     private final CoursDao coursDao = new CoursDao();
     private final SalleDao salleDao = new SalleDao();
     private final CoachDao coachDao = new CoachDao();
+    private final InscriptionDao inscriptionDao = new InscriptionDao();
 
-    public List<Cours> getAllCours() throws SQLException {
-        return coursDao.getAllCours();
+    // Tous les cours. Si l'utilisateur connecte est un adherent, on marque ceux ou il est inscrit.
+    public List<Cours> getAllCours(int utilisateurId) throws SQLException {
+        List<Cours> liste = coursDao.getAllCours();
+        Integer adherentId = inscriptionDao.getAdherentId(utilisateurId);
+        if (adherentId != null) {
+            Set<Integer> mesCours = inscriptionDao.getCoursIdsByAdherent(adherentId);
+            for (Cours c : liste) {
+                c.setInscrit(mesCours.contains(c.getId()));
+            }
+        }
+        return liste;
     }
 
-    public Cours getCours(int id) throws SQLException {
-        Cours cours = coursDao.getCours(id);
-        if (cours == null) {
-            throw new ResourceNotFoundException("Cours introuvable : " + id);
+    public Cours getCours(int id, int utilisateurId) throws SQLException {
+        Cours cours = trouver(id);
+        Integer adherentId = inscriptionDao.getAdherentId(utilisateurId);
+        if (adherentId != null) {
+            cours.setInscrit(inscriptionDao.existeInscription(id, adherentId));
         }
         return cours;
     }
 
+    // Cree le cours ; avec "semaines" = N, le cree aussi les N - 1 semaines suivantes (meme jour, meme heure).
+    // Renvoie le premier cours cree.
     public Cours createCours(CoursRequest request) throws SQLException {
-        Cours cours = valider(request);
-        int id = coursDao.createCours(cours);
-        return coursDao.getCours(id); // relu pour avoir coachNom / salleNom
+        int semaines = request.semaines() == null ? 1 : request.semaines();
+        if (semaines < 1 || semaines > SEMAINES_MAX) {
+            throw new IllegalArgumentException("Le nombre de semaines doit etre entre 1 et " + SEMAINES_MAX + ".");
+        }
+        Cours modele = valider(request);
+
+        // On verifie d'abord toutes les dates : soit tout est cree, soit rien
+        for (int k = 0; k < semaines; k++) {
+            verifierSalleLibre(modele.getSalleId(), modele.getDateCours().plusWeeks(k), modele, 0);
+        }
+        int premierId = 0;
+        for (int k = 0; k < semaines; k++) {
+            Cours cours = copie(modele);
+            cours.setDateCours(modele.getDateCours().plusWeeks(k));
+            int id = coursDao.createCours(cours);
+            if (k == 0) premierId = id;
+        }
+        return trouver(premierId); // relu pour avoir coachNom / salleNom
     }
 
     public Cours updateCours(int id, CoursRequest request) throws SQLException {
+        Cours existant = trouver(id);
         Cours cours = valider(request);
-        cours.setId(id);
-        if (!coursDao.updateCours(cours)) {
-            throw new ResourceNotFoundException("Cours introuvable : " + id);
+        if (cours.getCapacite() < existant.getInscrits()) {
+            throw new IllegalArgumentException("Capacite trop petite : " + existant.getInscrits()
+                    + " adherent(s) sont deja inscrits.");
         }
-        return coursDao.getCours(id);
+        verifierSalleLibre(cours.getSalleId(), cours.getDateCours(), cours, id);
+        cours.setId(id);
+        coursDao.updateCours(cours);
+        return trouver(id);
     }
 
     public void deleteCours(int id) throws SQLException {
@@ -50,6 +87,33 @@ public class CoursService {
         if (!coursDao.deleteCours(id)) {
             throw new ResourceNotFoundException("Cours introuvable : " + id);
         }
+    }
+
+    Cours trouver(int id) throws SQLException {
+        Cours cours = coursDao.getCours(id);
+        if (cours == null) {
+            throw new ResourceNotFoundException("Cours introuvable : " + id);
+        }
+        return cours;
+    }
+
+    // Deux cours ne peuvent pas avoir lieu dans la meme salle a la meme date et heure
+    private void verifierSalleLibre(int salleId, java.time.LocalDate date, Cours cours, int coursExcluId)
+            throws SQLException {
+        if (coursDao.existeCreneau(salleId, date, cours.getHeure(), coursExcluId)) {
+            throw new ConflictException("La salle est deja occupee le " + date + " a " + cours.getHeure() + ".");
+        }
+    }
+
+    private Cours copie(Cours c) {
+        Cours n = new Cours();
+        n.setNomCours(c.getNomCours());
+        n.setDateCours(c.getDateCours());
+        n.setHeure(c.getHeure());
+        n.setCapacite(c.getCapacite());
+        n.setCoachId(c.getCoachId());
+        n.setSalleId(c.getSalleId());
+        return n;
     }
 
     // Verifie les champs et les regles metier, puis construit le model

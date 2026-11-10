@@ -14,7 +14,11 @@ public class Cours {
     private int salleId;
     // Remplis par jointure, pour l'affichage
     private String coachNom;
+    private String coachPhoto;
+    private int coachUtilisateurId; // pour le filtre "Mes cours" du coach
     private String salleNom;
+    private int inscrits;           // nombre d'adherents inscrits
+    private boolean inscrit;        // l'adherent connecte est-il inscrit ? (false pour les autres roles)
 
     public Cours() {
     }
@@ -35,6 +39,14 @@ public class Cours {
     public void setSalleId(int salleId) { this.salleId = salleId; }
     public String getCoachNom() { return coachNom; }
     public void setCoachNom(String coachNom) { this.coachNom = coachNom; }
+    public String getCoachPhoto() { return coachPhoto; }
+    public void setCoachPhoto(String coachPhoto) { this.coachPhoto = coachPhoto; }
+    public int getCoachUtilisateurId() { return coachUtilisateurId; }
+    public void setCoachUtilisateurId(int coachUtilisateurId) { this.coachUtilisateurId = coachUtilisateurId; }
     public String getSalleNom() { return salleNom; }
     public void setSalleNom(String salleNom) { this.salleNom = salleNom; }
+    public int getInscrits() { return inscrits; }
+    public void setInscrits(int inscrits) { this.inscrits = inscrits; }
+    public boolean isInscrit() { return inscrit; }
+    public void setInscrit(boolean inscrit) { this.inscrit = inscrit; }
 }

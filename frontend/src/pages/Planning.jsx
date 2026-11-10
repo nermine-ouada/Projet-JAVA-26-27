@@ -1,45 +1,79 @@
 import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash2, Clock, MapPin, User, Users } from 'lucide-react'
-import { getAllCours, createCours, updateCours, deleteCours, getSalles, getCoachs } from '../api'
+import {
+  Plus, Pencil, Trash2, Clock, MapPin, Users, ChevronLeft, ChevronRight,
+  CalendarDays, CheckCircle2, UserRound, Repeat,
+} from 'lucide-react'
+import {
+  getAllCours, createCours, updateCours, deleteCours, getSalles, getCoachs,
+  inscrireCours, desinscrireCours, getParticipants,
+} from '../api'
 import { useAuth } from '../AuthContext'
 import Modal from '../components/Modal'
+import Avatar from '../components/Avatar'
+import Loader from '../components/Loader'
+import EmptyState from '../components/EmptyState'
 
-const VIDE = { nomCours: '', dateCours: '', heure: '', capacite: '', coachId: '', salleId: '' }
+const VIDE = { nomCours: '', dateCours: '', heure: '', capacite: '', coachId: '', salleId: '', semaines: 1 }
+const NOMS_JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+
+// ---------- Outils de dates (toujours en heure locale) ----------
+
+// Date -> "AAAA-MM-JJ" sans passer par l'UTC (qui decalerait d'un jour)
+function versIso(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
+}
+
+// Lundi de la semaine d'une date
+function lundiDe(date) {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  return d
+}
+
+function ajouterJours(date, n) {
+  const d = new Date(date)
+  d.setDate(d.getDate() + n)
+  return d
+}
 
 // "2026-11-16" -> "lundi 16 novembre"
-function formaterDate(iso) {
+function dateLongue(iso) {
   return new Date(iso + 'T00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
 }
 
-// Regroupe les cours par date : { "2026-11-16": [cours, cours], ... }
-function grouperParDate(cours) {
-  const groupes = {}
-  for (const c of cours) {
-    if (!groupes[c.dateCours]) groupes[c.dateCours] = []
-    groupes[c.dateCours].push(c)
-  }
-  return groupes
+function estPasse(c) {
+  return new Date(c.dateCours + 'T' + c.heure) < new Date()
 }
 
-// Planning des cours : tout le monde consulte, seul l'admin modifie
+// Agenda de la semaine : tout le monde consulte, l'adherent s'inscrit, l'admin planifie
 export default function Planning() {
-  const { estAdmin } = useAuth()
+  const { utilisateur, estAdmin, estCoach, estAdherent } = useAuth()
+  const [lundi, setLundi] = useState(() => lundiDe(new Date()))
   const [cours, setCours] = useState([])
   const [salles, setSalles] = useState([])
   const [coachs, setCoachs] = useState([])
+  const [filtre, setFiltre] = useState(estCoach ? 'miens' : 'tous')
   const [erreur, setErreur] = useState('')
   const [chargement, setChargement] = useState(true)
 
-  const [edition, setEdition] = useState(null)
+  const [selection, setSelection] = useState(null)     // cours ouvert dans la fiche
+  const [participants, setParticipants] = useState(null)
+  const [message, setMessage] = useState('')
+  const [edition, setEdition] = useState(null)         // formulaire de creation / modification
   const [aSupprimer, setASupprimer] = useState(null)
   const [erreurForm, setErreurForm] = useState('')
+  const [enCours, setEnCours] = useState(false)
 
   async function charger() {
     try {
-      setCours(await getAllCours())
+      const liste = await getAllCours()
+      setCours(liste)
       setErreur('')
+      return liste
     } catch (err) {
       setErreur(err.message)
+      return []
     } finally {
       setChargement(false)
     }
@@ -47,16 +81,47 @@ export default function Planning() {
 
   useEffect(() => {
     charger()
-    // Listes pour les menus deroulants du formulaire (admin seulement)
     if (estAdmin) {
       getSalles().then(setSalles).catch(() => {})
       getCoachs().then(setCoachs).catch(() => {})
     }
   }, [estAdmin])
 
-  function ouvrir(c) {
+  // ---------- Fiche d'un cours ----------
+
+  function ouvrirFiche(c) {
+    setSelection(c)
+    setMessage('')
     setErreurForm('')
-    setEdition(c ? { ...c, heure: c.heure.slice(0, 5) } : VIDE)
+    setParticipants(null)
+    if (!estAdherent) {
+      getParticipants(c.id).then(setParticipants).catch(() => setParticipants([]))
+    }
+  }
+
+  async function reserver(inscrire) {
+    setEnCours(true)
+    setErreurForm('')
+    try {
+      if (inscrire) await inscrireCours(selection.id)
+      else await desinscrireCours(selection.id)
+      const liste = await charger()
+      setSelection(liste.find((c) => c.id === selection.id) || null)
+      setMessage(inscrire ? 'Votre place est réservée.' : 'Votre inscription est annulée.')
+    } catch (err) {
+      setErreurForm(err.message)
+    } finally {
+      setEnCours(false)
+    }
+  }
+
+  // ---------- Formulaire (admin) ----------
+
+  function ouvrirFormulaire(c, date) {
+    setErreurForm('')
+    setSelection(null)
+    if (c) setEdition({ ...c, heure: c.heure.slice(0, 5), semaines: 1 })
+    else setEdition({ ...VIDE, dateCours: date || '' })
   }
 
   function changer(e) {
@@ -65,6 +130,7 @@ export default function Planning() {
 
   async function enregistrer(e) {
     e.preventDefault()
+    setEnCours(true)
     const corps = {
       nomCours: edition.nomCours,
       dateCours: edition.dateCours,
@@ -72,81 +138,212 @@ export default function Planning() {
       capacite: Number(edition.capacite),
       coachId: Number(edition.coachId),
       salleId: Number(edition.salleId),
+      semaines: Number(edition.semaines),
     }
     try {
       if (edition.id) await updateCours(edition.id, corps)
       else await createCours(corps)
       setEdition(null)
+      // Affiche la semaine du cours enregistre
+      setLundi(lundiDe(new Date(corps.dateCours + 'T00:00')))
       charger()
     } catch (err) {
       setErreurForm(err.message)
+    } finally {
+      setEnCours(false)
     }
   }
 
   async function supprimer() {
+    setEnCours(true)
     try {
       await deleteCours(aSupprimer.id)
       setASupprimer(null)
       charger()
     } catch (err) {
       setErreurForm(err.message)
+    } finally {
+      setEnCours(false)
     }
   }
 
-  const groupes = grouperParDate(cours)
+  // ---------- Donnees de la semaine affichee ----------
+
+  const jours = NOMS_JOURS.map((nom, i) => {
+    const date = ajouterJours(lundi, i)
+    return { nom, date, iso: versIso(date) }
+  })
+  const aujourdhui = versIso(new Date())
+  const dimanche = jours[6].date
+
+  const visibles = cours.filter((c) => {
+    if (filtre === 'miens' && estAdherent) return c.inscrit
+    if (filtre === 'miens' && estCoach) return c.coachUtilisateurId === utilisateur.id
+    return true
+  })
+  const coursDuJour = (iso) => visibles.filter((c) => c.dateCours === iso).sort((a, b) => a.heure.localeCompare(b.heure))
+  const totalSemaine = jours.reduce((n, j) => n + coursDuJour(j.iso).length, 0)
+
+  const titreSemaine = 'Semaine du ' + lundi.getDate() + ' au '
+    + dimanche.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
     <>
       <div className="page-head">
         <div>
-          <h1>Planning</h1>
-          <p className="muted">{cours.length} cours programmé(s)</p>
+          <h1>{estAdherent ? 'Agenda des cours' : estCoach ? 'Mon planning' : 'Planning'}</h1>
+          <p className="muted">{titreSemaine} · {totalSemaine} cours</p>
         </div>
-        {estAdmin && (
-          <button className="btn btn-primary" onClick={() => ouvrir(null)}><Plus size={16} /> Nouveau cours</button>
-        )}
+        <div className="page-head-actions">
+          {(estAdherent || estCoach) && (
+            <div className="segmented" role="group" aria-label="Filtre">
+              <button className={filtre === 'tous' ? 'actif' : ''} onClick={() => setFiltre('tous')}>Tous les cours</button>
+              <button className={filtre === 'miens' ? 'actif' : ''} onClick={() => setFiltre('miens')}>
+                {estAdherent ? 'Mes inscriptions' : 'Mes cours'}
+              </button>
+            </div>
+          )}
+          {estAdmin && (
+            <button className="btn btn-primary" onClick={() => ouvrirFormulaire(null)}>
+              <Plus size={16} aria-hidden="true" /> Planifier un cours
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="semaine-nav">
+        <button className="btn btn-small" onClick={() => setLundi(ajouterJours(lundi, -7))} aria-label="Semaine précédente">
+          <ChevronLeft size={16} aria-hidden="true" />
+        </button>
+        <button className="btn btn-small" onClick={() => setLundi(lundiDe(new Date()))}>Cette semaine</button>
+        <button className="btn btn-small" onClick={() => setLundi(ajouterJours(lundi, 7))} aria-label="Semaine suivante">
+          <ChevronRight size={16} aria-hidden="true" />
+        </button>
       </div>
 
       {erreur && <p className="error">{erreur}</p>}
-      {chargement && <div className="card empty">Chargement…</div>}
-      {!chargement && cours.length === 0 && <div className="card empty">Aucun cours programmé.</div>}
+      {chargement && <Loader />}
 
-      {Object.entries(groupes).map(([date, liste]) => (
-        <section key={date} className="jour">
-          <h2 className="jour-titre">{formaterDate(date)}</h2>
-          <div className="card">
-            {liste.map((c) => (
-              <div key={c.id} className="cours-ligne">
-                <span className="cours-heure"><Clock size={15} /> {c.heure.slice(0, 5)}</span>
-                <div className="cours-info">
-                  <strong>{c.nomCours}</strong>
-                  <span className="muted cours-details">
-                    <span><User size={13} /> {c.coachNom}</span>
-                    <span><MapPin size={13} /> {c.salleNom}</span>
-                    <span><Users size={13} /> {c.capacite} places</span>
-                  </span>
-                </div>
-                {estAdmin && (
-                  <div className="actions">
-                    <button className="btn btn-small" onClick={() => ouvrir(c)}><Pencil size={14} /></button>
-                    <button className="btn btn-small btn-danger-ghost" aria-label="Supprimer"
-                      onClick={() => { setErreurForm(''); setASupprimer(c) }}>
-                      <Trash2 size={14} />
+      {!chargement && (
+        <div className="agenda" key={versIso(lundi) + filtre}>
+          {jours.map((j, i) => {
+            const liste = coursDuJour(j.iso)
+            const passe = j.iso < aujourdhui
+            return (
+              <section key={j.iso} className={'agenda-jour' + (j.iso === aujourdhui ? ' aujourdhui' : '') + (passe ? ' passe' : '')}
+                style={{ '--i': i }}>
+                <header className="agenda-jour-tete">
+                  <span>{j.nom}</span>
+                  <strong>{j.date.getDate()}</strong>
+                </header>
+                <div className="agenda-jour-cours">
+                  {liste.map((c) => {
+                    const complet = c.inscrits >= c.capacite
+                    return (
+                      <button key={c.id} className={'ccard' + (complet ? ' complet' : '') + (c.inscrit ? ' inscrit' : '') + (estPasse(c) ? ' fini' : '')}
+                        onClick={() => ouvrirFiche(c)}>
+                        <span className="ccard-heure">{c.heure.slice(0, 5)}</span>
+                        <span className="ccard-nom">{c.nomCours}</span>
+                        <span className="ccard-ligne"><Avatar personne={{ prenom: c.coachNom, nom: c.coachNom.split(' ')[1], photo: c.coachPhoto }} taille="xs" /> {c.coachNom}</span>
+                        <span className="ccard-ligne"><MapPin size={12} aria-hidden="true" /> {c.salleNom}</span>
+                        <span className="ccard-places">
+                          <span className="jauge"><span style={{ width: Math.min(100, (c.inscrits / c.capacite) * 100) + '%' }} /></span>
+                          {complet ? 'Complet' : c.inscrits + '/' + c.capacite}
+                        </span>
+                        {c.inscrit && <span className="ccard-tag"><CheckCircle2 size={12} aria-hidden="true" /> Inscrit</span>}
+                      </button>
+                    )
+                  })}
+                  {liste.length === 0 && <span className="agenda-vide">Aucun cours</span>}
+                  {estAdmin && !passe && (
+                    <button className="agenda-ajout" onClick={() => ouvrirFormulaire(null, j.iso)} aria-label={'Ajouter un cours le ' + j.iso}>
+                      <Plus size={14} aria-hidden="true" />
                     </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      ))}
+                  )}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+      )}
 
+      {!chargement && totalSemaine === 0 && filtre === 'miens' && (
+        <div style={{ marginTop: 16 }}>
+          <EmptyState icone={CalendarDays} titre={estAdherent ? 'Vous n\'êtes inscrit à aucun cours cette semaine.' : 'Aucun de vos cours cette semaine.'}>
+            <button className="btn" onClick={() => setFiltre('tous')}>Voir tous les cours</button>
+          </EmptyState>
+        </div>
+      )}
+
+      {/* ---------- Fiche du cours ---------- */}
+      {selection && (
+        <Modal titre={selection.nomCours} onClose={() => setSelection(null)}>
+          <div className="fiche">
+            <p className="fiche-date"><Clock size={16} aria-hidden="true" /> {dateLongue(selection.dateCours)} à {selection.heure.slice(0, 5)}</p>
+            <div className="ucard-head">
+              <Avatar personne={{ prenom: selection.coachNom, nom: selection.coachNom.split(' ')[1], photo: selection.coachPhoto }} />
+              <div>
+                <div className="ucard-title">{selection.coachNom}</div>
+                <div className="ucard-sub"><MapPin size={12} aria-hidden="true" /> {selection.salleNom}</div>
+              </div>
+            </div>
+            <div className="fiche-places">
+              <span><Users size={14} aria-hidden="true" /> {selection.inscrits} inscrit(s) sur {selection.capacite} places</span>
+              <span className="jauge jauge-lg"><span style={{ width: Math.min(100, (selection.inscrits / selection.capacite) * 100) + '%' }} /></span>
+            </div>
+
+            {message && <p className="alert alert-success"><CheckCircle2 size={16} aria-hidden="true" /> {message}</p>}
+            {erreurForm && <p className="error">{erreurForm}</p>}
+
+            {/* Adherent : reserver ou annuler */}
+            {estAdherent && (
+              estPasse(selection) ? <p className="muted">Ce cours est terminé.</p>
+                : selection.inscrit ? (
+                  <button className="btn btn-block" onClick={() => reserver(false)} disabled={enCours}>Annuler mon inscription</button>
+                ) : selection.inscrits >= selection.capacite ? (
+                  <button className="btn btn-block" disabled>Cours complet</button>
+                ) : (
+                  <button className="btn btn-primary btn-block" onClick={() => reserver(true)} disabled={enCours}>
+                    {enCours ? 'Réservation…' : 'Réserver ma place'}
+                  </button>
+                )
+            )}
+
+            {/* Admin et coach : liste des inscrits */}
+            {!estAdherent && (
+              <div>
+                <h3 className="fiche-sous-titre"><UserRound size={15} aria-hidden="true" /> Inscrits</h3>
+                {participants === null && <p className="muted">Chargement…</p>}
+                {participants?.length === 0 && <p className="muted">Personne n'est encore inscrit.</p>}
+                <div className="participants">
+                  {participants?.map((p) => (
+                    <span key={p.id} className="participant"><Avatar personne={p} taille="xs" /> {p.prenom} {p.nom}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {estAdmin && (
+              <div className="modal-actions">
+                <button className="btn btn-danger-ghost" onClick={() => { setErreurForm(''); setASupprimer(selection); setSelection(null) }}>
+                  <Trash2 size={14} aria-hidden="true" /> Supprimer
+                </button>
+                <button className="btn" onClick={() => ouvrirFormulaire(selection)}>
+                  <Pencil size={14} aria-hidden="true" /> Modifier
+                </button>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {/* ---------- Formulaire (admin) ---------- */}
       {edition && (
-        <Modal titre={edition.id ? 'Modifier le cours' : 'Nouveau cours'} onClose={() => setEdition(null)}>
+        <Modal titre={edition.id ? 'Modifier le cours' : 'Planifier un cours'} onClose={() => setEdition(null)}>
           <form className="form" onSubmit={enregistrer}>
             <label>
               Nom du cours
-              <input name="nomCours" value={edition.nomCours} onChange={changer} required autoFocus />
+              <input name="nomCours" value={edition.nomCours} onChange={changer} required autoFocus placeholder="Yoga du soir" />
             </label>
             <div className="row">
               <label>
@@ -164,7 +361,7 @@ export default function Planning() {
                 <select name="coachId" value={edition.coachId} onChange={changer} required>
                   <option value="">Choisir…</option>
                   {coachs.map((c) => (
-                    <option key={c.id} value={c.id}>{c.prenom} {c.nom} ({c.specialite})</option>
+                    <option key={c.id} value={c.id}>{c.prenom} {c.nom}{c.specialite ? ' (' + c.specialite + ')' : ''}</option>
                   ))}
                 </select>
               </label>
@@ -178,27 +375,38 @@ export default function Planning() {
                 </select>
               </label>
             </div>
-            <label>
-              Capacité <span className="hint">ne doit pas dépasser celle de la salle</span>
-              <input name="capacite" type="number" min="1" value={edition.capacite} onChange={changer} required />
-            </label>
+            <div className="row">
+              <label>
+                Capacité <span className="hint">au plus celle de la salle</span>
+                <input name="capacite" type="number" min="1" value={edition.capacite} onChange={changer} required />
+              </label>
+              {!edition.id && (
+                <label>
+                  <span><Repeat size={13} aria-hidden="true" /> Répéter</span>
+                  <select name="semaines" value={edition.semaines} onChange={changer}>
+                    <option value="1">Une seule fois</option>
+                    {[2, 3, 4, 6, 8, 12].map((n) => <option key={n} value={n}>Chaque semaine, {n} semaines</option>)}
+                  </select>
+                </label>
+              )}
+            </div>
             {erreurForm && <p className="error">{erreurForm}</p>}
             <div className="modal-actions">
               <button type="button" className="btn" onClick={() => setEdition(null)}>Annuler</button>
-              <button className="btn btn-primary">Enregistrer</button>
+              <button className="btn btn-primary" disabled={enCours}>{enCours ? 'Enregistrement…' : 'Enregistrer'}</button>
             </div>
           </form>
         </Modal>
       )}
 
       {aSupprimer && (
-        <Modal titre="Supprimer le cours" onClose={() => setASupprimer(null)}>
-          <p>Supprimer <strong>{aSupprimer.nomCours}</strong> du {formaterDate(aSupprimer.dateCours)} ?
-            Les inscriptions à ce cours seront aussi supprimées.</p>
+        <Modal titre="Supprimer le cours ?" onClose={() => setASupprimer(null)}>
+          <p>Supprimer <strong>{aSupprimer.nomCours}</strong> du {dateLongue(aSupprimer.dateCours)} ?
+            {aSupprimer.inscrits > 0 && ' Les ' + aSupprimer.inscrits + ' inscription(s) seront aussi supprimées.'}</p>
           {erreurForm && <p className="error">{erreurForm}</p>}
           <div className="modal-actions">
             <button className="btn" onClick={() => setASupprimer(null)}>Annuler</button>
-            <button className="btn btn-danger" onClick={supprimer}>Supprimer</button>
+            <button className="btn btn-danger" onClick={supprimer} disabled={enCours}>Supprimer</button>
           </div>
         </Modal>
       )}

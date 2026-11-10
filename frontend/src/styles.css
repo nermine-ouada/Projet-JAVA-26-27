@@ -674,18 +674,85 @@ input:focus, select:focus, textarea:focus {
 /* ===== Styles des fonctionnalites (chaque branche ajoute sous sa ligne) ===== */
 /* [eya] salles, cours */
 .inline-icon { display: inline-flex; align-items: center; gap: 6px; }
-.jour { margin-bottom: 24px; }
-.jour-titre { font-size: 18px; margin-bottom: 10px; text-transform: capitalize; }
-.cours-ligne { display: flex; align-items: center; gap: 20px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
-.cours-ligne:last-child { border-bottom: none; }
-.cours-heure { display: inline-flex; align-items: center; gap: 6px; min-width: 76px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent-dark); }
-.cours-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.cours-details { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; margin: 0; }
-.cours-details span { display: inline-flex; align-items: center; gap: 5px; }
-.cours-ligne .actions { display: flex; gap: 6px; }
+.avatar-xs { width: 20px; height: 20px; font-size: 10px; }
+
+/* Filtre a deux boutons (Tous / Mes cours) */
+.segmented { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; }
+.segmented button { border: none; background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 500; padding: 0 12px; height: 36px; cursor: pointer; transition: background-color 0.15s, color 0.15s; }
+.segmented button + button { border-left: 1px solid var(--line-strong); }
+.segmented button.actif { background: var(--ink); color: var(--bg); }
+
+/* Agenda de la semaine */
+.semaine-nav { display: flex; gap: 6px; margin: -8px 0 16px; }
+.agenda { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.agenda-jour { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); min-height: 220px; display: flex; flex-direction: column; animation: fadeUp 0.4s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.agenda-jour.passe { opacity: 0.6; }
+.agenda-jour-tete { display: flex; align-items: baseline; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.agenda-jour-tete span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); }
+.agenda-jour-tete strong { font-family: var(--font-display); font-size: 22px; line-height: 1; }
+.agenda-jour.aujourdhui { border-color: var(--accent); }
+.agenda-jour.aujourdhui .agenda-jour-tete { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+.agenda-jour.aujourdhui .agenda-jour-tete span { color: #fff; }
+.agenda-jour-cours { display: flex; flex-direction: column; gap: 6px; padding: 6px; flex: 1; }
+.agenda-vide { color: var(--line-strong); font-size: 12px; text-align: center; padding: 10px 0; }
+.agenda-ajout { margin-top: auto; border: 1px dashed var(--line-strong); background: none; color: var(--ink-2); border-radius: var(--radius); height: 28px; cursor: pointer; display: grid; place-items: center; transition: color 0.15s, border-color 0.15s; }
+.agenda-ajout:hover { color: var(--accent-text); border-color: var(--accent); }
+
+/* Carte de cours (charte) : filet gauche orange = collectif, gris = complet */
+.ccard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 8px 8px 8px 9px;
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), box-shadow 0.18s, border-color 0.18s;
+}
+.ccard:hover { transform: translateY(-2px); box-shadow: 0 6px 16px -10px var(--shadow); }
+.ccard.complet { border-left-color: var(--line-strong); }
+.ccard.inscrit { background: var(--success-bg); }
+.ccard.fini { opacity: 0.6; }
+.ccard-heure { font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1; font-variant-numeric: tabular-nums; }
+.ccard-nom { font-weight: 600; font-size: 13px; line-height: 1.25; }
+.ccard-ligne { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--ink-2); max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ccard-places { display: flex; align-items: center; gap: 6px; width: 100%; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.ccard-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: var(--success); }
+
+/* Jauge de remplissage */
+.jauge { flex: 1; height: 4px; border-radius: 2px; background: var(--chip); overflow: hidden; display: block; }
+.jauge span { display: block; height: 100%; background: var(--accent); border-radius: 2px; transform-origin: left; animation: jauge 0.6s var(--ease) both; }
+.complet .jauge span { background: var(--line-strong); }
+.jauge-lg { height: 8px; border-radius: 4px; }
+@keyframes jauge { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Fiche d'un cours */
+.fiche { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+.fiche p { margin: 0; }
+.fiche-date { display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: capitalize; }
+.fiche-places { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--ink-2); }
+.fiche-places > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.fiche-sous-titre { font-size: 15px; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.participants { display: flex; flex-wrap: wrap; gap: 6px; }
+.participant { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 3px 10px 3px 3px; border-radius: 999px; background: var(--chip); }
+
+@media (max-width: 1024px) {
+  .agenda { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 @media (max-width: 760px) {
-  .cours-ligne { gap: 12px; padding: 12px 14px; align-items: flex-start; }
-  .cours-heure { min-width: 60px; }
+  .agenda { grid-template-columns: 1fr; }
+  .agenda-jour { min-height: 0; }
+  .agenda-jour-cours { flex-direction: row; flex-wrap: wrap; }
+  .ccard { width: calc(50% - 3px); }
+  .agenda-ajout { width: 100%; }
 }
 
 /* [nermine] abonnements */
