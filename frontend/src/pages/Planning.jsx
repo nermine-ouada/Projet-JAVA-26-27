@@ -243,7 +243,10 @@ export default function Planning() {
                         <span className="ccard-heure">{c.heure.slice(0, 5)}</span>
                         <span className="ccard-nom">{c.nomCours}</span>
                         <span className="ccard-ligne">{c.coachNom} · {c.salleNom}</span>
-                        <span className="ccard-places">{complet ? 'Complet' : c.inscrits + ' / ' + c.capacite}</span>
+                        <span className="ccard-places">
+                          <span className="jauge"><span style={{ width: Math.min(100, (c.inscrits / c.capacite) * 100) + '%' }} /></span>
+                          {complet ? 'Complet' : c.inscrits + '/' + c.capacite}
+                        </span>
                         {c.inscrit && <span className="ccard-tag">Inscrit</span>}
                       </button>
                     )
