@@ -84,6 +84,21 @@ Le role (ADMIN / COACH / ADHERENT) est deduit de la table qui contient l'utilisa
 - La date de fin doit etre apres la date de debut, le prix doit etre positif.
 - Chaque abonnement renvoye contient un `statut` calcule : `ACTIF`, `EXPIRE` ou `A_VENIR`.
 
+### Coaching prive (branche nermine)
+
+| Methode | URL                   | Acces | Corps JSON |
+|---------|-----------------------|-------|------------|
+| GET     | /seances              | connecte | aucun (admin : toutes ; coach et adherent : les leurs) |
+| GET     | /seances/{id}         | son coach, son adherent, ADMIN | aucun |
+| POST    | /seances              | ADHERENT, ADMIN | `{"coachId":1,"dateSeance":"2026-11-25","heure":"17:00","dureeMinutes":60,"objectif":"Perdre 3 kg"}` (+ `"adherentId"` pour l'admin) |
+| PUT     | /seances/{id}/statut  | COACH, ADHERENT, ADMIN | `{"statut":"CONFIRMEE"}` ou `{"statut":"ANNULEE"}` |
+| DELETE  | /seances/{id}         | ADMIN | aucun |
+
+- `statut` : `EN_ATTENTE` (demande d'un adherent), `CONFIRMEE` (par le coach, ou reservee par l'admin), `ANNULEE`.
+- Le coach confirme ou annule ses seances ; l'adherent peut seulement annuler les siennes.
+- `dureeMinutes` : 30, 45, 60 ou 90. La seance doit etre dans le futur.
+- Un coach ne peut pas avoir deux seances qui se chevauchent (409). Une seance annulee libere le creneau.
+
 ## Codes HTTP
 
 | Code | Cas |

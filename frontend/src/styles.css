@@ -675,16 +675,70 @@ input:focus, select:focus, textarea:focus {
 /* [eya] salles, cours */
 
 /* [nermine] abonnements */
-.statut { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 3px; border: 1px solid; }
-.statut-actif { color: #2b8a3e; border-color: #2b8a3e; background: #ebfbee; }
-.statut-expire { color: var(--ink-2); border-color: var(--line-strong); background: var(--bg); }
-.statut-a_venir { color: var(--accent-dark); border-color: var(--accent); background: #fff4e6; }
+/* Statut des abonnements (couleurs de la charte, compatibles mode sombre) */
+.statut { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; }
+.statut-actif { color: var(--success); background: var(--success-bg); }
+.statut-expire { color: var(--ink-2); background: var(--chip); }
+.statut-a_venir { color: var(--warning); background: var(--warning-bg); }
 .mes-abonnements { margin-top: 32px; max-width: 760px; }
-.section-sous-titre { font-size: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.section-sous-titre svg { color: var(--accent); }
 .abonnement-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-.abonnement-carte { padding: 16px; }
+.abonnement-carte { padding: 16px; transition: transform 0.2s var(--ease); }
+.abonnement-carte:hover { transform: translateY(-2px); }
 .abonnement-carte p { margin: 4px 0 0; }
 .abonnement-actif { border-color: var(--accent); border-width: 2px; }
 .abonnement-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .abonnement-prix { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+
+/* Filtre a deux boutons (aussi defini sur la branche eya : memes valeurs) */
+.segmented { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; }
+.segmented button { border: none; background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 500; padding: 0 12px; height: 36px; cursor: pointer; transition: background-color 0.15s, color 0.15s; }
+.segmented button + button { border-left: 1px solid var(--line-strong); }
+.segmented button.actif { background: var(--ink); color: var(--bg); }
+
+/* Seances privees : filet gauche encre (charte : cours prive) */
+.seances { display: flex; flex-direction: column; gap: 10px; }
+.scard {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s;
+}
+.scard:hover { transform: translateX(3px); box-shadow: 0 6px 18px -12px var(--shadow); }
+.scard.annulee { opacity: 0.6; border-left-color: var(--line-strong); }
+.scard-quand { display: flex; flex-direction: column; gap: 2px; }
+.scard-jour { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+.scard-heure { font-family: var(--font-display); font-weight: 700; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+.scard-quand .hint { display: inline-flex; align-items: center; gap: 4px; }
+.scard-corps { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.scard-personnes { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+.scard-objectif { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13.5px; font-style: italic; }
+.scard-fin { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+
+/* Choix du coach (cartes-boutons radio) */
+.choix-coach { border: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.choix-coach legend { font-weight: 500; font-size: 13px; margin-bottom: 6px; padding: 0; }
+.form .choix-coach-carte {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s;
+}
+.form .choix-coach-carte:hover { border-color: var(--ink); }
+.form .choix-coach-carte.choisi { border-color: var(--accent-dark); background: var(--hover); box-shadow: inset 3px 0 0 var(--accent); }
+.choix-coach-carte input { position: absolute; opacity: 0; pointer-events: none; }
+
+@media (max-width: 760px) {
+  .scard { grid-template-columns: 1fr; gap: 10px; }
+  .scard-quand { flex-direction: row; align-items: baseline; gap: 10px; }
+  .scard-fin { flex-direction: row; align-items: center; justify-content: space-between; }
+}

@@ -11,6 +11,7 @@ import Personnes from './pages/Personnes'
 
 // [nermine] abonnements
 import Abonnements from './pages/Abonnements'
+import Seances from './pages/Seances'
 
 // Bloque l'acces aux pages si l'utilisateur n'est pas connecte
 function Protege({ children }) {
@@ -49,6 +50,7 @@ export default function App() {
 
         {/* [nermine] abonnements */}
         <Route path="/abonnements" element={<AdminSeulement><Abonnements /></AdminSeulement>} />
+        <Route path="/seances" element={<Seances />} />
 
       </Route>
 

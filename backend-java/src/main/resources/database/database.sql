@@ -135,6 +135,23 @@ CREATE TABLE inscription_cours (
 -- [eya] tables
 
 -- [nermine] tables
+-- Seances de coaching prive : un adherent reserve un coach pour une seance individuelle
+CREATE TABLE seance_privee (
+    id             INT AUTO_INCREMENT PRIMARY KEY,
+    coach_id       INT NOT NULL,
+    adherent_id    INT NOT NULL,
+    date_seance    DATE NOT NULL,
+    heure          TIME NOT NULL,
+    duree_minutes  INT NOT NULL DEFAULT 60,
+    objectif       VARCHAR(255),
+    statut         VARCHAR(20) NOT NULL DEFAULT 'EN_ATTENTE', -- EN_ATTENTE, CONFIRMEE ou ANNULEE
+    created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_seance_coach FOREIGN KEY (coach_id)
+        REFERENCES coach(id) ON DELETE CASCADE,
+    CONSTRAINT fk_seance_adherent FOREIGN KEY (adherent_id)
+        REFERENCES adherent(id) ON DELETE CASCADE
+);
 
 
 -- =====================================================
@@ -195,3 +212,9 @@ INSERT INTO inscription_cours (adherent_id, cours_id) VALUES
 -- [eya] donnees
 
 -- [nermine] donnees
+-- Seances privees (coach_id : 1 = Sami, 2 = Leila ; adherent_id : 1 = Yassine, 2 = Nour, 3 = Rania)
+INSERT INTO seance_privee (coach_id, adherent_id, date_seance, heure, duree_minutes, objectif, statut) VALUES
+    (1, 1, '2026-11-17', '17:00:00', 60, 'Programme de prise de masse', 'CONFIRMEE'),
+    (2, 3, '2026-11-18', '09:00:00', 45, 'Souplesse et posture',        'EN_ATTENTE'),
+    (1, 2, '2026-11-20', '12:00:00', 60, 'Preparation semi-marathon',   'EN_ATTENTE'),
+    (2, 1, '2026-11-05', '18:00:00', 60, 'Bilan de forme',              'CONFIRMEE');

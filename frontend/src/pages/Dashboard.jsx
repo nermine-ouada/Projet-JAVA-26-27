@@ -8,6 +8,7 @@ import Loader from '../components/Loader'
 // [eya] tuiles
 
 // [nermine] tuiles
+import TuilesNermine from '../components/TuilesNermine'
 
 
 // Tableau de bord de l'admin : chiffres cles + derniers inscrits
@@ -55,6 +56,7 @@ export default function Dashboard() {
             {/* [eya] tuiles */}
 
             {/* [nermine] tuiles */}
+            <TuilesNermine />
 
           </div>
 

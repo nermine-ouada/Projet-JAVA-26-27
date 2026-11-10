@@ -62,6 +62,7 @@ public class Router {
 
     // [nermine] abonnements
     private final AbonnementController abonnementController = new AbonnementController();
+    private final SeanceController seanceController = new SeanceController();
 
 
     // Point d'entree unique pour toutes les requetes HTTP
@@ -122,6 +123,8 @@ public class Router {
                 return routesAbonnement(methode, segments, exchange);
             case "adherents":
                 return routesAdherent(methode, segments, exchange);
+            case "seances":
+                return routesSeance(methode, segments, exchange);
 
             default:
                 throw new ResourceNotFoundException("Route inconnue : /" + segments[1]);
@@ -337,6 +340,70 @@ public class Router {
 
     private Reponse getAdherents() throws SQLException {
         return new Reponse(200, gson.toJson(abonnementController.getAdherents()));
+    }
+
+    // ---------------------------------------------------------
+    // Coaching prive (seances individuelles)
+    // GET    /seances              -> getSeances    (ADMIN : toutes, COACH / ADHERENT : les siennes)
+    // GET    /seances/{id}         -> getSeance     (son coach, son adherent, ADMIN)
+    // POST   /seances              -> createSeance  (ADHERENT pour lui-meme, ADMIN pour un adherent)
+    // PUT    /seances/{id}/statut  -> changerStatut (COACH : confirmer / annuler, ADHERENT : annuler)
+    // DELETE /seances/{id}         -> deleteSeance  (ADMIN)
+    // Les droits fins sont verifies dans SeanceService.
+    // ---------------------------------------------------------
+    private Reponse routesSeance(String methode, String[] segments, HttpExchange exchange)
+            throws IOException, SQLException {
+        UtilisateurResponse connecte = getMe(exchange);
+
+        if (segments.length == 2) {
+            switch (methode) {
+                case "GET":  return getSeances(connecte);
+                case "POST": return createSeance(exchange, connecte);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /seances");
+            }
+        }
+
+        if (segments.length == 3) {
+            int id = entier(segments[2]);
+            switch (methode) {
+                case "GET":    return getSeance(id, connecte);
+                case "DELETE": return deleteSeance(id, connecte);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /seances/{id}");
+            }
+        }
+
+        if (segments.length == 4 && segments[3].equals("statut") && methode.equals("PUT")) {
+            return changerStatut(exchange, entier(segments[2]), connecte);
+        }
+
+        throw new ResourceNotFoundException("Route inconnue : " + String.join("/", segments));
+    }
+
+    private Reponse getSeances(UtilisateurResponse connecte) throws SQLException {
+        return new Reponse(200, gson.toJson(seanceController.getSeances(connecte)));
+    }
+
+    private Reponse getSeance(int id, UtilisateurResponse connecte) throws SQLException {
+        return new Reponse(200, gson.toJson(seanceController.getSeance(id, connecte)));
+    }
+
+    private Reponse createSeance(HttpExchange exchange, UtilisateurResponse connecte) throws IOException, SQLException {
+        SeanceRequest request = lireCorps(exchange, SeanceRequest.class);
+        return new Reponse(201, gson.toJson(seanceController.createSeance(request, connecte)));
+    }
+
+    private Reponse changerStatut(HttpExchange exchange, int id, UtilisateurResponse connecte)
+            throws IOException, SQLException {
+        StatutRequest request = lireCorps(exchange, StatutRequest.class);
+        return new Reponse(200, gson.toJson(seanceController.changerStatut(id, request.statut(), connecte)));
+    }
+
+    private Reponse deleteSeance(int id, UtilisateurResponse connecte) throws SQLException {
+        exigerRole(connecte, "ADMIN");
+        seanceController.deleteSeance(id);
+        return new Reponse(204, "");
     }
 
     // ---------------------------------------------------------
