@@ -737,7 +737,7 @@ input:focus, select:focus, textarea:focus {
 /* Fiche d'un cours */
 .fiche { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
 .fiche p { margin: 0; }
-.fiche-date { display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: capitalize; }
+.fiche-date { display: flex; align-items: center; gap: 8px; font-weight: 500; }
 .fiche-places { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--ink-2); }
 .fiche-places > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
 .fiche-sous-titre { font-size: 15px; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }

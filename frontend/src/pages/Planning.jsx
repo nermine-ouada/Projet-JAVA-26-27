@@ -37,9 +37,10 @@ function ajouterJours(date, n) {
   return d
 }
 
-// "2026-11-16" -> "lundi 16 novembre"
+// "2026-11-16" -> "Lundi 16 novembre" (majuscule seulement au debut)
 function dateLongue(iso) {
-  return new Date(iso + 'T00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const texte = new Date(iso + 'T00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+  return texte.charAt(0).toUpperCase() + texte.slice(1)
 }
 
 function estPasse(c) {
@@ -401,7 +402,7 @@ export default function Planning() {
 
       {aSupprimer && (
         <Modal titre="Supprimer le cours ?" onClose={() => setASupprimer(null)}>
-          <p>Supprimer <strong>{aSupprimer.nomCours}</strong> du {dateLongue(aSupprimer.dateCours)} ?
+          <p>Supprimer <strong>{aSupprimer.nomCours}</strong> du {dateLongue(aSupprimer.dateCours).toLowerCase()} ?
             {aSupprimer.inscrits > 0 && ' Les ' + aSupprimer.inscrits + ' inscription(s) seront aussi supprimées.'}</p>
           {erreurForm && <p className="error">{erreurForm}</p>}
           <div className="modal-actions">
