@@ -251,73 +251,17 @@
       ]
     },
     {
-      "name": "2. Inscription",
+      "name": "2. Pas d'inscription publique",
       "item": [
         {
-          "name": "Inscription adherent",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.collectionVariables.set(\"inscritEmail\", \"postman\" + Date.now() + \"@mail.tn\");"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
-                  "const json = pm.response.json();",
-                  "pm.test(\"Compte ADHERENT avec token\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"ADHERENT\"); });",
-                  "pm.test(\"Le mot de passe n'est jamais renvoye\", function () { pm.expect(json.utilisateur).to.not.have.property(\"motDePasse\"); });",
-                  "pm.collectionVariables.set(\"inscritId\", json.utilisateur.id);",
-                  "pm.collectionVariables.set(\"inscritToken\", json.token);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nom\": \"Postman\",\n  \"prenom\": \"Test\",\n  \"email\": \"{{inscritEmail}}\",\n  \"motDePasse\": \"secret1\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Inscription email deja utilise (409)",
+          "name": "L'inscription n'existe plus (404)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Statut 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Statut 404\", function () { pm.response.to.have.status(404); });",
                   "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
                 ]
               }
@@ -341,52 +285,10 @@
                 "register"
               ]
             },
+            "description": "Les comptes sont crees par l'admin (POST /utilisateurs).",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nom\": \"Postman\",\n  \"prenom\": \"Test\",\n  \"email\": \"{{inscritEmail}}\",\n  \"motDePasse\": \"secret1\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Inscription mot de passe trop court (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
-                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nom\": \"Postman\",\n  \"prenom\": \"Test\",\n  \"email\": \"court@mail.tn\",\n  \"motDePasse\": \"123\"\n}",
+              "raw": "{\n  \"nom\": \"Postman\",\n  \"prenom\": \"Test\",\n  \"email\": \"postman@mail.tn\",\n  \"motDePasse\": \"secret1\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1144,7 +1046,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{inscritToken}}"
+                "value": "Bearer {{adherentToken}}"
               }
             ],
             "url": {
@@ -1187,7 +1089,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{inscritToken}}"
+                "value": "Bearer {{adherentToken}}"
               }
             ],
             "url": {
@@ -1225,7 +1127,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{inscritToken}}"
+                "value": "Bearer {{adherentToken}}"
               }
             ],
             "url": {
@@ -1272,7 +1174,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{inscritToken}}"
+                "value": "Bearer {{adherentToken}}"
               }
             ],
             "url": {
@@ -1335,39 +1237,6 @@
                   "language": "json"
                 }
               }
-            }
-          }
-        },
-        {
-          "name": "Supprimer le compte inscrit (nettoyage)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{adminToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/utilisateurs/{{inscritId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "utilisateurs",
-                "{{inscritId}}"
-              ]
             }
           }
         }
@@ -1489,18 +1358,6 @@
     },
     {
       "key": "adherentToken",
-      "value": ""
-    },
-    {
-      "key": "inscritEmail",
-      "value": ""
-    },
-    {
-      "key": "inscritId",
-      "value": ""
-    },
-    {
-      "key": "inscritToken",
       "value": ""
     },
     {

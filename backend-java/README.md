@@ -44,9 +44,10 @@ Le role (ADMIN / COACH / ADHERENT) est deduit de la table qui contient l'utilisa
 
 ## Routes
 
+Pas d'inscription publique : les comptes (coachs, adherents) sont crees par l'admin via `POST /utilisateurs`.
+
 | Methode | URL                 | Acces    | Corps JSON |
 |---------|---------------------|----------|------------|
-| POST    | /auth/register      | public   | `{"nom":"Ali","prenom":"Sara","email":"sara@mail.tn","motDePasse":"secret1"}` |
 | POST    | /auth/login         | public   | `{"email":"admin@fitness.tn","motDePasse":"admin123"}` |
 | GET     | /auth/me            | connecte | aucun |
 | POST    | /auth/logout        | connecte | aucun |

@@ -132,7 +132,6 @@ public class Router {
 
     // ---------------------------------------------------------
     // Authentification
-    // POST /auth/register   (public)
     // POST /auth/login      (public)
     // POST /auth/logout     (connecte)
     // GET  /auth/me         (connecte)
@@ -144,7 +143,6 @@ public class Router {
             throw new ResourceNotFoundException("Route inconnue : " + String.join("/", segments));
         }
         switch (methode + " " + segments[2]) {
-            case "POST register": return register(exchange);
             case "POST login":    return login(exchange);
             case "POST logout":   return logout(exchange);
             case "GET me":        return new Reponse(200, gson.toJson(getMe(exchange)));
@@ -152,11 +150,6 @@ public class Router {
             default:
                 throw new ResourceNotFoundException("Route inconnue : " + methode + " /auth/" + segments[2]);
         }
-    }
-
-    private Reponse register(HttpExchange exchange) throws IOException, SQLException {
-        RegisterRequest request = lireCorps(exchange, RegisterRequest.class);
-        return new Reponse(201, gson.toJson(authController.register(request)));
     }
 
     private Reponse login(HttpExchange exchange) throws IOException, SQLException {

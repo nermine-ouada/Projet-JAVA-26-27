@@ -3,7 +3,6 @@ import { useAuth } from './AuthContext'
 import Layout from './components/Layout'
 import Accueil from './pages/Accueil'
 import Login from './pages/Login'
-import Register from './pages/Register'
 import Profil from './pages/Profil'
 import Dashboard from './pages/Dashboard'
 import Personnes from './pages/Personnes'
@@ -37,7 +36,6 @@ export default function App() {
       {/* Pages publiques */}
       <Route path="/" element={<Accueil />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
 
       {/* Espace connecte (menu lateral + page) */}
       <Route element={<Protege><Layout /></Protege>}>

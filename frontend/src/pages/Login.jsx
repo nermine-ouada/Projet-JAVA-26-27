@@ -46,7 +46,7 @@ export default function Login() {
         </button>
       </form>
       <p className="muted small">
-        Pas encore de compte ? <Link to="/register">Créer un compte</Link>
+        Pas encore de compte ? Il est créé par l'accueil du club lors de votre inscription.
       </p>
     </AuthShell>
   )

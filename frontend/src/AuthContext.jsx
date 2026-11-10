@@ -3,18 +3,12 @@ import * as api from './api'
 
 const AuthContext = createContext(null)
 
-// Fournit l'utilisateur connecte + login / register / logout a toute l'application
+// Fournit l'utilisateur connecte + login / logout a toute l'application
 export function AuthProvider({ children }) {
   const [utilisateur, setUtilisateur] = useState(api.getSavedUser())
 
   async function login(email, motDePasse) {
     const res = await api.login(email, motDePasse)
-    api.saveSession(res.token, res.utilisateur)
-    setUtilisateur(res.utilisateur)
-  }
-
-  async function register(formulaire) {
-    const res = await api.register(formulaire)
     api.saveSession(res.token, res.utilisateur)
     setUtilisateur(res.utilisateur)
   }
@@ -40,7 +34,7 @@ export function AuthProvider({ children }) {
   const estAdherent = utilisateur?.role === 'ADHERENT'
 
   return (
-    <AuthContext.Provider value={{ utilisateur, estAdmin, estCoach, estAdherent, login, register, logout, majUtilisateur }}>
+    <AuthContext.Provider value={{ utilisateur, estAdmin, estCoach, estAdherent, login, logout, majUtilisateur }}>
       {children}
     </AuthContext.Provider>
   )
