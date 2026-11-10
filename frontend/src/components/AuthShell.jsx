@@ -5,7 +5,7 @@ export default function AuthShell({ children }) {
     <div className="auth">
       <aside className="auth-side">
         <Link to="/" className="brand brand-lg">Club Atlas</Link>
-        <p>Planning des cours, salles et adhérents.<br />Tout le club au même endroit.</p>
+        <p>Réservez.<br />Entraînez-vous.<br />Progressez.</p>
         <span className="auth-foot">ENICarthage · Projet fédérateur</span>
       </aside>
       <section className="auth-main">

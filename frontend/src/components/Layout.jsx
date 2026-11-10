@@ -25,18 +25,18 @@ export default function Layout() {
     <div className="dashboard">
       <aside className="sidebar">
         <div className="sidebar-inner">
-          <Link to="/" className="brand brand-icon sidebar-brand"><Dumbbell size={20} /> Club Atlas</Link>
+          <Link to="/" className="brand sidebar-brand">Club Atlas</Link>
           <nav className="sidebar-nav">
-            {estAdmin && <NavLink to="/tableau-de-bord"><LayoutDashboard size={18} /> Tableau de bord</NavLink>}
-            {estAdmin && <NavLink to="/adherents"><Users size={18} /> Adhérents</NavLink>}
-            {estAdmin && <NavLink to="/coachs"><Dumbbell size={18} /> Coachs</NavLink>}
+            {estAdmin && <NavLink to="/tableau-de-bord">Tableau de bord</NavLink>}
+            {estAdmin && <NavLink to="/adherents">Adhérents</NavLink>}
+            {estAdmin && <NavLink to="/coachs">Coachs</NavLink>}
             {/* [eya] salles, cours */}
 
             {/* [nermine] abonnements */}
             {estAdmin && <NavLink to="/abonnements"><Ticket size={18} /> Abonnements</NavLink>}
             <NavLink to="/seances"><Handshake size={18} /> {estAdmin ? 'Séances privées' : estCoach ? 'Mes séances' : 'Coaching privé'}</NavLink>
 
-            <NavLink to="/profil"><UserRound size={18} /> Mon profil</NavLink>
+            <NavLink to="/profil">Mon profil</NavLink>
           </nav>
           <div className="sidebar-user">
             <div className="sidebar-user-info">
@@ -51,7 +51,7 @@ export default function Layout() {
             <div className="sidebar-actions">
               <ThemeToggle />
               <button className="btn btn-ghost sidebar-logout" onClick={deconnexion}>
-                <LogOut size={16} /> Déconnexion
+                Déconnexion
               </button>
             </div>
           </div>
