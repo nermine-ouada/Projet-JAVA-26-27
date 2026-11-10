@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-// Mise en page commune a la connexion et a l'inscription
+// Mise en page de la page de connexion
 export default function AuthShell({ children }) {
   return (
     <div className="auth">

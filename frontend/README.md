@@ -32,9 +32,9 @@ Les autres rôles voient seulement **Mon profil**.
 ```
 src/
   api.js            appels HTTP vers l'API + stockage du token
-  AuthContext.jsx   utilisateur connecté, login / register / logout
+  AuthContext.jsx   utilisateur connecté, login / logout
   App.jsx           routes (pages publiques et protégées)
   components/       Layout (barre du haut), Modal, AuthShell
-  pages/            Login, Register, Profil, Utilisateurs (CRUD utilisateurs, admin)
+  pages/            Accueil, Login, Profil, Dashboard, Personnes (coachs / adherents, admin)
   styles.css        tout le style (variables CSS en haut du fichier)
 ```
