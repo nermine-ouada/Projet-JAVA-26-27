@@ -241,8 +241,7 @@ export default function Seances() {
                     </button>
                   )}
                   {estAdmin && (
-                    <button className="btn btn-small btn-danger-ghost" aria-label="Supprimer" onClick={() => setASupprimer(s)}>
-                                          </button>
+                    <button className="btn btn-small btn-danger-ghost" aria-label="Supprimer" onClick={() => setASupprimer(s)}>Supprimer</button>
                   )}
                 </div>
               </div>

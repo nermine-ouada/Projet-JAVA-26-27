@@ -154,10 +154,9 @@ export default function Abonnements() {
                 <td className="num">{Number(a.prix).toFixed(2)} DT</td>
                 <td><span className={'statut statut-' + a.statut.toLowerCase()}>{STATUTS[a.statut]}</span></td>
                 <td className="actions">
-                  <button className="btn btn-small" onClick={() => ouvrir(a)}></button>
+                  <button className="btn btn-small" onClick={() => ouvrir(a)}>Modifier</button>
                   <button className="btn btn-small btn-danger-ghost" aria-label="Supprimer"
-                    onClick={() => { setErreurForm(''); setASupprimer(a) }}>
-                                      </button>
+                    onClick={() => { setErreurForm(''); setASupprimer(a) }}>Supprimer</button>
                 </td>
               </tr>
             ))}
