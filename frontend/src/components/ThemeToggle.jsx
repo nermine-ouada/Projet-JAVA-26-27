@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react'
-import { Monitor, Sun, Moon } from 'lucide-react'
 
-// Auto -> Clair -> Sombre -> Auto. "Auto" suit le reglage du systeme.
+// Clair (par defaut) -> Sombre -> Auto (suit le systeme) -> Clair
 const MODES = [
-  { valeur: 'auto', libelle: 'Auto', icone: Monitor },
-  { valeur: 'light', libelle: 'Clair', icone: Sun },
-  { valeur: 'dark', libelle: 'Sombre', icone: Moon },
+  { valeur: 'light', libelle: 'Clair' },
+  { valeur: 'dark', libelle: 'Sombre' },
+  { valeur: 'auto', libelle: 'Auto' },
 ]
 const CLE = 'club-atlas-theme' // meme cle que le script de index.html
 
 function lireTheme() {
   try {
-    return localStorage.getItem(CLE) || 'auto'
+    return localStorage.getItem(CLE) || 'light'
   } catch {
-    return 'auto'
+    return 'light'
   }
 }
 
@@ -22,8 +21,7 @@ export default function ThemeToggle() {
 
   // Pose data-theme sur <html> : les variables CSS changent de valeur
   useEffect(() => {
-    if (theme === 'auto') document.documentElement.removeAttribute('data-theme')
-    else document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-theme', theme)
     try {
       localStorage.setItem(CLE, theme)
     } catch {
@@ -31,15 +29,13 @@ export default function ThemeToggle() {
     }
   }, [theme])
 
-  const index = MODES.findIndex((m) => m.valeur === theme)
-  const mode = MODES[index === -1 ? 0 : index]
+  const index = Math.max(0, MODES.findIndex((m) => m.valeur === theme))
   const suivant = MODES[(index + 1) % MODES.length]
-  const Icone = mode.icone
 
   return (
     <button type="button" className="theme-toggle" onClick={() => setTheme(suivant.valeur)}
-      title={'Thème : ' + mode.libelle + ' (cliquer pour ' + suivant.libelle + ')'}>
-      <Icone size={14} aria-hidden="true" /> <span>{mode.libelle}</span>
+      title={'Passer en mode ' + suivant.libelle.toLowerCase()}>
+      Thème : {MODES[index].libelle}
     </button>
   )
 }
