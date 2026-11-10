@@ -13,15 +13,19 @@ import java.util.List;
 
 public class UtilisateurDao {
 
-    // Le role est deduit de la table qui contient l'utilisateur (administrateur / coach / adherent)
+    // Le role est deduit de la table qui contient l'utilisateur (administrateur / coach / adherent).
+    // Telephone et specialite sont stockes dans la table du role.
     private static final String SELECT_AVEC_ROLE = """
-            SELECT u.id, u.nom, u.prenom, u.email, u.mot_de_passe,
+            SELECT u.id, u.nom, u.prenom, u.email, u.mot_de_passe, u.photo,
                    CASE WHEN a.id IS NOT NULL THEN 'ADMIN'
                         WHEN c.id IS NOT NULL THEN 'COACH'
-                        ELSE 'ADHERENT' END AS role
+                        ELSE 'ADHERENT' END AS role,
+                   COALESCE(c.telephone, ad.telephone) AS telephone,
+                   c.specialite
             FROM utilisateur u
             LEFT JOIN administrateur a ON a.utilisateur_id = u.id
             LEFT JOIN coach c ON c.utilisateur_id = u.id
+            LEFT JOIN adherent ad ON ad.utilisateur_id = u.id
             """;
 
     public List<Utilisateur> getUtilisateurs() throws SQLException {
@@ -66,21 +70,27 @@ public class UtilisateurDao {
             try {
                 int id;
                 try (PreparedStatement ps = cnx.prepareStatement(
-                        "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe) VALUES (?, ?, ?, ?)",
+                        "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, photo) VALUES (?, ?, ?, ?, ?)",
                         Statement.RETURN_GENERATED_KEYS)) {
                     ps.setString(1, u.getNom());
                     ps.setString(2, u.getPrenom());
                     ps.setString(3, u.getEmail());
                     ps.setString(4, u.getMotDePasse());
+                    ps.setString(5, u.getPhoto());
                     ps.executeUpdate();
                     try (ResultSet keys = ps.getGeneratedKeys()) {
                         keys.next();
                         id = keys.getInt(1);
                     }
                 }
-                try (PreparedStatement ps = cnx.prepareStatement(
-                        "INSERT INTO " + tableDuRole(u.getRole()) + " (utilisateur_id) VALUES (?)")) {
+                try (PreparedStatement ps = cnx.prepareStatement(insertRole(u.getRole()))) {
                     ps.setInt(1, id);
+                    if (u.getRole().equals("COACH")) {
+                        ps.setString(2, u.getTelephone());
+                        ps.setString(3, u.getSpecialite());
+                    } else if (u.getRole().equals("ADHERENT")) {
+                        ps.setString(2, u.getTelephone());
+                    }
                     ps.executeUpdate();
                 }
                 cnx.commit();
@@ -92,24 +102,59 @@ public class UtilisateurDao {
         }
     }
 
-    // Modifie nom, prenom, email ; le mot de passe seulement s'il est fourni (non null)
+    // Modifie nom, prenom, email (+ mot de passe et photo s'ils sont fournis, non null),
+    // puis telephone / specialite dans la table du role. Une seule transaction.
     public boolean updateUtilisateur(Utilisateur u) throws SQLException {
         boolean avecMotDePasse = u.getMotDePasse() != null;
+        boolean avecPhoto = u.getPhoto() != null;
         String sql = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?"
                 + (avecMotDePasse ? ", mot_de_passe = ?" : "")
+                + (avecPhoto ? ", photo = ?" : "")
                 + " WHERE id = ?";
-        try (Connection cnx = DatabaseConnection.getConnection();
-             PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setString(1, u.getNom());
-            ps.setString(2, u.getPrenom());
-            ps.setString(3, u.getEmail());
-            if (avecMotDePasse) {
-                ps.setString(4, u.getMotDePasse());
-                ps.setInt(5, u.getId());
-            } else {
-                ps.setInt(4, u.getId());
+        try (Connection cnx = DatabaseConnection.getConnection()) {
+            cnx.setAutoCommit(false);
+            try {
+                boolean modifie;
+                try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+                    int i = 1;
+                    ps.setString(i++, u.getNom());
+                    ps.setString(i++, u.getPrenom());
+                    ps.setString(i++, u.getEmail());
+                    if (avecMotDePasse) ps.setString(i++, u.getMotDePasse());
+                    if (avecPhoto) ps.setString(i++, u.getPhoto().isEmpty() ? null : u.getPhoto());
+                    ps.setInt(i, u.getId());
+                    modifie = ps.executeUpdate() > 0;
+                }
+                // Une seule de ces deux requetes touche une ligne (selon le role)
+                try (PreparedStatement ps = cnx.prepareStatement(
+                        "UPDATE coach SET telephone = ?, specialite = ? WHERE utilisateur_id = ?")) {
+                    ps.setString(1, u.getTelephone());
+                    ps.setString(2, u.getSpecialite());
+                    ps.setInt(3, u.getId());
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = cnx.prepareStatement(
+                        "UPDATE adherent SET telephone = ? WHERE utilisateur_id = ?")) {
+                    ps.setString(1, u.getTelephone());
+                    ps.setInt(2, u.getId());
+                    ps.executeUpdate();
+                }
+                cnx.commit();
+                return modifie;
+            } catch (SQLException e) {
+                cnx.rollback();
+                throw e;
             }
-            return ps.executeUpdate() > 0;
+        }
+    }
+
+    // photo = null pour la supprimer
+    public void updatePhoto(int id, String photo) throws SQLException {
+        try (Connection cnx = DatabaseConnection.getConnection();
+             PreparedStatement ps = cnx.prepareStatement("UPDATE utilisateur SET photo = ? WHERE id = ?")) {
+            ps.setString(1, photo);
+            ps.setInt(2, id);
+            ps.executeUpdate();
         }
     }
 
@@ -122,23 +167,27 @@ public class UtilisateurDao {
         }
     }
 
-    // Nom de table fixe (jamais une saisie de l'utilisateur) : pas de risque d'injection SQL
-    private String tableDuRole(String role) {
+    // Requete fixe par role (jamais construite a partir d'une saisie) : pas de risque d'injection SQL
+    private String insertRole(String role) {
         return switch (role) {
-            case "ADMIN" -> "administrateur";
-            case "COACH" -> "coach";
-            case "ADHERENT" -> "adherent";
+            case "ADMIN" -> "INSERT INTO administrateur (utilisateur_id) VALUES (?)";
+            case "COACH" -> "INSERT INTO coach (utilisateur_id, telephone, specialite) VALUES (?, ?, ?)";
+            case "ADHERENT" -> "INSERT INTO adherent (utilisateur_id, telephone) VALUES (?, ?)";
             default -> throw new IllegalArgumentException("Role invalide : " + role);
         };
     }
 
     private Utilisateur mapper(ResultSet rs) throws SQLException {
-        return new Utilisateur(
+        Utilisateur u = new Utilisateur(
                 rs.getInt("id"),
                 rs.getString("nom"),
                 rs.getString("prenom"),
                 rs.getString("email"),
                 rs.getString("mot_de_passe"),
                 rs.getString("role"));
+        u.setPhoto(rs.getString("photo"));
+        u.setTelephone(rs.getString("telephone"));
+        u.setSpecialite(rs.getString("specialite"));
+        return u;
     }
 }

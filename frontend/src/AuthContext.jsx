@@ -29,10 +29,18 @@ export function AuthProvider({ children }) {
     setUtilisateur(null)
   }
 
+  // Met a jour l'utilisateur garde en memoire (ex. apres un changement de photo)
+  function majUtilisateur(nouveau) {
+    api.saveSession(localStorage.getItem('token'), nouveau)
+    setUtilisateur(nouveau)
+  }
+
   const estAdmin = utilisateur?.role === 'ADMIN'
+  const estCoach = utilisateur?.role === 'COACH'
+  const estAdherent = utilisateur?.role === 'ADHERENT'
 
   return (
-    <AuthContext.Provider value={{ utilisateur, estAdmin, login, register, logout }}>
+    <AuthContext.Provider value={{ utilisateur, estAdmin, estCoach, estAdherent, login, register, logout, majUtilisateur }}>
       {children}
     </AuthContext.Provider>
   )

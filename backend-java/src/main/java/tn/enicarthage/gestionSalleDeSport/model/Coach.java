@@ -7,15 +7,17 @@ public class Coach {
     private String nom;
     private String prenom;
     private String specialite;
+    private String photo;
 
     public Coach() {
     }
 
-    public Coach(int id, String nom, String prenom, String specialite) {
+    public Coach(int id, String nom, String prenom, String specialite, String photo) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.specialite = specialite;
+        this.photo = photo;
     }
 
     public int getId() { return id; }
@@ -26,4 +28,6 @@ public class Coach {
     public void setPrenom(String prenom) { this.prenom = prenom; }
     public String getSpecialite() { return specialite; }
     public void setSpecialite(String specialite) { this.specialite = specialite; }
+    public String getPhoto() { return photo; }
+    public void setPhoto(String photo) { this.photo = photo; }
 }

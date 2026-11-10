@@ -14,7 +14,7 @@ import java.util.List;
 public class CoachDao {
 
     private static final String SELECT = """
-            SELECT c.id, u.nom, u.prenom, c.specialite
+            SELECT c.id, u.nom, u.prenom, c.specialite, u.photo
             FROM coach c
             JOIN utilisateur u ON u.id = c.utilisateur_id
             """;
@@ -42,6 +42,7 @@ public class CoachDao {
     }
 
     private Coach mapper(ResultSet rs) throws SQLException {
-        return new Coach(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("specialite"));
+        return new Coach(rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"),
+                rs.getString("specialite"), rs.getString("photo"));
     }
 }

@@ -17,6 +17,8 @@ import java.util.Set;
 public class UtilisateurService {
 
     private static final Set<String> ROLES = Set.of("ADMIN", "COACH", "ADHERENT");
+    // Le frontend reduit la photo a 256 px avant l'envoi : ~30 Ko. On refuse au-dela de ~500 Ko.
+    private static final int TAILLE_MAX_PHOTO = 700_000;
 
     private final UtilisateurDao utilisateurDao = new UtilisateurDao();
 
@@ -38,6 +40,8 @@ public class UtilisateurService {
         if (r.role() == null || !ROLES.contains(r.role())) {
             throw new IllegalArgumentException("Role invalide (ADMIN, COACH ou ADHERENT).");
         }
+        validerDetails(r.telephone(), r.specialite());
+        validerPhoto(r.photo());
         String email = normaliserEmail(r.email());
         if (utilisateurDao.getUtilisateurByEmail(email) != null) {
             throw new ConflictException("Un compte existe deja avec cet email.");
@@ -45,6 +49,9 @@ public class UtilisateurService {
 
         Utilisateur u = new Utilisateur(0, r.nom().trim(), r.prenom().trim(), email,
                 PasswordUtil.hasher(r.motDePasse()), r.role());
+        u.setTelephone(nettoyer(r.telephone()));
+        u.setSpecialite(nettoyer(r.specialite()));
+        u.setPhoto(nettoyer(r.photo()));
         int id = utilisateurDao.createUtilisateur(u);
         return getUtilisateur(id);
     }
@@ -52,6 +59,8 @@ public class UtilisateurService {
     public UtilisateurResponse updateUtilisateur(int id, UtilisateurRequest r) throws SQLException {
         trouver(id); // 404 si l'utilisateur n'existe pas
         validerChamps(r.nom(), r.prenom(), r.email());
+        validerDetails(r.telephone(), r.specialite());
+        validerPhoto(r.photo());
         String email = normaliserEmail(r.email());
         Utilisateur memeEmail = utilisateurDao.getUtilisateurByEmail(email);
         if (memeEmail != null && memeEmail.getId() != id) {
@@ -64,7 +73,18 @@ public class UtilisateurService {
             validerMotDePasse(r.motDePasse());
             hash = PasswordUtil.hasher(r.motDePasse());
         }
-        utilisateurDao.updateUtilisateur(new Utilisateur(id, r.nom().trim(), r.prenom().trim(), email, hash, null));
+        Utilisateur u = new Utilisateur(id, r.nom().trim(), r.prenom().trim(), email, hash, null);
+        u.setTelephone(nettoyer(r.telephone()));
+        u.setSpecialite(nettoyer(r.specialite()));
+        u.setPhoto(r.photo()); // null = inchangee, "" = supprimee
+        utilisateurDao.updateUtilisateur(u);
+        return getUtilisateur(id);
+    }
+
+    // Photo de l'utilisateur connecte (page "Mon profil"). "" ou null = supprimer la photo.
+    public UtilisateurResponse updatePhoto(int id, String photo) throws SQLException {
+        validerPhoto(photo);
+        utilisateurDao.updatePhoto(id, nettoyer(photo));
         return getUtilisateur(id);
     }
 
@@ -105,8 +125,36 @@ public class UtilisateurService {
         }
     }
 
+    // Telephone et specialite sont facultatifs
+    private void validerDetails(String telephone, String specialite) {
+        if (!estVide(telephone) && !telephone.trim().matches("^[+0-9 ]{6,20}$")) {
+            throw new IllegalArgumentException("Telephone invalide (chiffres, espaces et + seulement).");
+        }
+        if (!estVide(specialite) && specialite.trim().length() > 100) {
+            throw new IllegalArgumentException("La specialite ne doit pas depasser 100 caracteres.");
+        }
+    }
+
+    // Photo facultative : une image encodee en base64 ("data:image/...")
+    private void validerPhoto(String photo) {
+        if (estVide(photo)) {
+            return;
+        }
+        if (!photo.startsWith("data:image/")) {
+            throw new IllegalArgumentException("La photo doit etre une image (jpg, png ou webp).");
+        }
+        if (photo.length() > TAILLE_MAX_PHOTO) {
+            throw new IllegalArgumentException("Photo trop lourde : choisissez une image plus petite.");
+        }
+    }
+
     private String normaliserEmail(String email) {
         return email.trim().toLowerCase();
+    }
+
+    // "" ou espaces -> null (rien en base)
+    private String nettoyer(String valeur) {
+        return estVide(valeur) ? null : valeur.trim();
     }
 
     private boolean estVide(String valeur) {
@@ -115,6 +163,7 @@ public class UtilisateurService {
 
     // Ne renvoie jamais le mot de passe (meme hashe) au client
     static UtilisateurResponse versResponse(Utilisateur u) {
-        return new UtilisateurResponse(u.getId(), u.getNom(), u.getPrenom(), u.getEmail(), u.getRole());
+        return new UtilisateurResponse(u.getId(), u.getNom(), u.getPrenom(), u.getEmail(), u.getRole(),
+                u.getTelephone(), u.getSpecialite(), u.getPhoto());
     }
 }

@@ -57,6 +57,8 @@ export const login = (email, motDePasse) => request('/auth/login', 'POST', { ema
 export const register = (utilisateur) => request('/auth/register', 'POST', utilisateur)
 export const logout = () => request('/auth/logout', 'POST')
 export const getMe = () => request('/auth/me')
+// Photo de l'utilisateur connecte : image en texte (data URL), ou '' pour la retirer
+export const updateMaPhoto = (photo) => request('/auth/photo', 'PUT', { photo })
 
 // ---------- Utilisateurs (CRUD, admin) ----------
 
@@ -65,6 +67,10 @@ export const getUtilisateur = (id) => request('/utilisateurs/' + id)
 export const createUtilisateur = (utilisateur) => request('/utilisateurs', 'POST', utilisateur)
 export const updateUtilisateur = (id, utilisateur) => request('/utilisateurs/' + id, 'PUT', utilisateur)
 export const deleteUtilisateur = (id) => request('/utilisateurs/' + id, 'DELETE')
+
+// ---------- Coachs (liste pour les formulaires) ----------
+
+export const getCoachs = () => request('/coachs')
 
 // ---------- [eya] Salles, Cours ----------
 
@@ -79,7 +85,5 @@ export const getCours = (id) => request('/cours/' + id)
 export const createCours = (cours) => request('/cours', 'POST', cours)
 export const updateCours = (id, cours) => request('/cours/' + id, 'PUT', cours)
 export const deleteCours = (id) => request('/cours/' + id, 'DELETE')
-
-export const getCoachs = () => request('/coachs')
 
 // ---------- [nermine] Abonnements ----------
