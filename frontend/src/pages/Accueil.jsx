@@ -46,7 +46,7 @@ export default function Accueil() {
           </nav>
           <div className="home-actions">
             {utilisateur ? (
-              <Link to="/profil" className="btn btn-primary">Mon espace</Link>
+              <Link to="/espace" className="btn btn-primary">Mon espace</Link>
             ) : (
               <>
                 <Link to="/login" className="btn btn-ghost-light">Se connecter</Link>
@@ -65,7 +65,7 @@ export default function Accueil() {
           <p>Musculation, cardio et cours collectifs encadrés par des coachs diplômés,
             7 jours sur 7.</p>
           <div className="hero-buttons">
-            <Link to={utilisateur ? '/profil' : '/register'} className="btn btn-primary btn-lg">
+            <Link to={utilisateur ? '/espace' : '/register'} className="btn btn-primary btn-lg">
               {utilisateur ? 'Accéder à mon espace' : 'Créer mon compte'} <ArrowRight size={18} />
             </Link>
             <a href="#activites" className="btn btn-ghost-light btn-lg">Voir les activités</a>
@@ -123,7 +123,7 @@ export default function Accueil() {
           <h2 className="section-title">Un coach à vos côtés</h2>
           <p>Bilan de départ, programme sur mesure et points réguliers :
             nos coachs vous accompagnent du premier jour jusqu’à vos objectifs.</p>
-          <Link to={utilisateur ? '/profil' : '/register'} className="btn btn-primary">
+          <Link to={utilisateur ? '/espace' : '/register'} className="btn btn-primary">
             Commencer maintenant <ArrowRight size={16} />
           </Link>
         </div>

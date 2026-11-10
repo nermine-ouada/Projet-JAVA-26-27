@@ -10,7 +10,7 @@ export default function Register() {
   const [erreur, setErreur] = useState('')
   const [chargement, setChargement] = useState(false)
 
-  if (utilisateur) return <Navigate to="/profil" replace />
+  if (utilisateur) return <Navigate to="/espace" replace />
 
   // Met a jour un champ du formulaire a partir de son attribut "name"
   function changer(e) {
@@ -23,7 +23,7 @@ export default function Register() {
     setChargement(true)
     try {
       await register(form)
-      navigate('/profil')
+      navigate('/espace')
     } catch (err) {
       setErreur(err.message)
     } finally {

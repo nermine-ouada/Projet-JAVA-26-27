@@ -11,7 +11,7 @@ export default function Login() {
   const [erreur, setErreur] = useState('')
   const [chargement, setChargement] = useState(false)
 
-  if (utilisateur) return <Navigate to="/profil" replace />
+  if (utilisateur) return <Navigate to="/espace" replace />
 
   async function envoyer(e) {
     e.preventDefault()
@@ -19,7 +19,7 @@ export default function Login() {
     setChargement(true)
     try {
       await login(email, motDePasse)
-      navigate('/profil')
+      navigate('/espace')
     } catch (err) {
       setErreur(err.message)
     } finally {
