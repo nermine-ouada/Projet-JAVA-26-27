@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarDays } from 'lucide-react'
 import { getAllCours } from '../api'
 
 // Tuile du tableau de bord : cours des 7 prochains jours et places reservees
@@ -21,7 +20,7 @@ export default function TuileCours() {
 
   return (
     <Link to="/planning" className="tile" style={{ '--i': 2 }}>
-      <span className="tile-label"><CalendarDays size={16} aria-hidden="true" /> Cours à venir</span>
+      <span className="tile-label">Cours à venir</span>
       <span className="tile-value">{cours ? prochains.length : '…'}</span>
       <span className="tile-sub">sur 7 jours, {places} place(s) réservée(s)</span>
     </Link>

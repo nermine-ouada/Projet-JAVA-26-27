@@ -31,8 +31,8 @@ export default function Layout() {
             {estAdmin && <NavLink to="/adherents">Adhérents</NavLink>}
             {estAdmin && <NavLink to="/coachs">Coachs</NavLink>}
             {/* [eya] salles, cours */}
-            <NavLink to="/planning"><CalendarDays size={18} /> {estAdherent ? 'Agenda' : estCoach ? 'Mon planning' : 'Planning'}</NavLink>
-            {estAdmin && <NavLink to="/salles"><Building2 size={18} /> Salles</NavLink>}
+            <NavLink to="/planning">{estAdherent ? 'Agenda' : estCoach ? 'Mon planning' : 'Planning'}</NavLink>
+            {estAdmin && <NavLink to="/salles">Salles</NavLink>}
 
             {/* [nermine] abonnements */}
 

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash2, Users } from 'lucide-react'
 import { getSalles, createSalle, updateSalle, deleteSalle } from '../api'
 import { useAuth } from '../AuthContext'
 import Modal from '../components/Modal'
@@ -66,7 +65,7 @@ export default function Salles() {
           <p className="muted">{salles.length} salle(s) dans le club</p>
         </div>
         {estAdmin && (
-          <button className="btn btn-primary" onClick={() => ouvrir(null)}><Plus size={16} /> Nouvelle salle</button>
+          <button className="btn btn-primary" onClick={() => ouvrir(null)}>Nouvelle salle</button>
         )}
       </div>
 
@@ -89,13 +88,13 @@ export default function Salles() {
             {salles.map((s) => (
               <tr key={s.id}>
                 <td className="strong">{s.nom}</td>
-                <td className="num"><span className="inline-icon"><Users size={14} /> {s.capacite} places</span></td>
+                <td className="num">{s.capacite} places</td>
                 {estAdmin && (
                   <td className="actions">
-                    <button className="btn btn-small" onClick={() => ouvrir(s)}><Pencil size={14} /> Modifier</button>
+                    <button className="btn btn-small" onClick={() => ouvrir(s)}>Modifier</button>
                     <button className="btn btn-small btn-danger-ghost"
                       onClick={() => { setErreurForm(''); setASupprimer(s) }}>
-                      <Trash2 size={14} /> Supprimer
+                      Supprimer
                     </button>
                   </td>
                 )}

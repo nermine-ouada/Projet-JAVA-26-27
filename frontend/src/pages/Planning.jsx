@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  Plus, Pencil, Trash2, Clock, MapPin, Users, ChevronLeft, ChevronRight,
-  CalendarDays, CheckCircle2, UserRound, Repeat,
-} from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import {
   getAllCours, createCours, updateCours, deleteCours, getSalles, getCoachs,
   inscrireCours, desinscrireCours, getParticipants,
@@ -206,19 +203,19 @@ export default function Planning() {
           )}
           {estAdmin && (
             <button className="btn btn-primary" onClick={() => ouvrirFormulaire(null)}>
-              <Plus size={16} aria-hidden="true" /> Planifier un cours
+              Planifier un cours
             </button>
           )}
         </div>
       </div>
 
       <div className="semaine-nav">
-        <button className="btn btn-small" onClick={() => setLundi(ajouterJours(lundi, -7))} aria-label="Semaine précédente">
-          <ChevronLeft size={16} aria-hidden="true" />
+        <button className="btn btn-small" onClick={() => setLundi(ajouterJours(lundi, -7))}>
+          ‹ Précédente
         </button>
         <button className="btn btn-small" onClick={() => setLundi(lundiDe(new Date()))}>Cette semaine</button>
-        <button className="btn btn-small" onClick={() => setLundi(ajouterJours(lundi, 7))} aria-label="Semaine suivante">
-          <ChevronRight size={16} aria-hidden="true" />
+        <button className="btn btn-small" onClick={() => setLundi(ajouterJours(lundi, 7))}>
+          Suivante ›
         </button>
       </div>
 
@@ -245,21 +242,16 @@ export default function Planning() {
                         onClick={() => ouvrirFiche(c)}>
                         <span className="ccard-heure">{c.heure.slice(0, 5)}</span>
                         <span className="ccard-nom">{c.nomCours}</span>
-                        <span className="ccard-ligne"><Avatar personne={{ prenom: c.coachNom, nom: c.coachNom.split(' ')[1], photo: c.coachPhoto }} taille="xs" /> {c.coachNom}</span>
-                        <span className="ccard-ligne"><MapPin size={12} aria-hidden="true" /> {c.salleNom}</span>
-                        <span className="ccard-places">
-                          <span className="jauge"><span style={{ width: Math.min(100, (c.inscrits / c.capacite) * 100) + '%' }} /></span>
-                          {complet ? 'Complet' : c.inscrits + '/' + c.capacite}
-                        </span>
-                        {c.inscrit && <span className="ccard-tag"><CheckCircle2 size={12} aria-hidden="true" /> Inscrit</span>}
+                        <span className="ccard-ligne">{c.coachNom} · {c.salleNom}</span>
+                        <span className="ccard-places">{complet ? 'Complet' : c.inscrits + ' / ' + c.capacite}</span>
+                        {c.inscrit && <span className="ccard-tag">Inscrit</span>}
                       </button>
                     )
                   })}
                   {liste.length === 0 && <span className="agenda-vide">Aucun cours</span>}
                   {estAdmin && !passe && (
                     <button className="agenda-ajout" onClick={() => ouvrirFormulaire(null, j.iso)} aria-label={'Ajouter un cours le ' + j.iso}>
-                      <Plus size={14} aria-hidden="true" />
-                    </button>
+                                          </button>
                   )}
                 </div>
               </section>
@@ -280,20 +272,20 @@ export default function Planning() {
       {selection && (
         <Modal titre={selection.nomCours} onClose={() => setSelection(null)}>
           <div className="fiche">
-            <p className="fiche-date"><Clock size={16} aria-hidden="true" /> {dateLongue(selection.dateCours)} à {selection.heure.slice(0, 5)}</p>
+            <p className="fiche-date">{dateLongue(selection.dateCours)} à {selection.heure.slice(0, 5)}</p>
             <div className="ucard-head">
               <Avatar personne={{ prenom: selection.coachNom, nom: selection.coachNom.split(' ')[1], photo: selection.coachPhoto }} />
               <div>
                 <div className="ucard-title">{selection.coachNom}</div>
-                <div className="ucard-sub"><MapPin size={12} aria-hidden="true" /> {selection.salleNom}</div>
+                <div className="ucard-sub">{selection.salleNom}</div>
               </div>
             </div>
             <div className="fiche-places">
-              <span><Users size={14} aria-hidden="true" /> {selection.inscrits} inscrit(s) sur {selection.capacite} places</span>
+              <span>{selection.inscrits} inscrit(s) sur {selection.capacite} places</span>
               <span className="jauge jauge-lg"><span style={{ width: Math.min(100, (selection.inscrits / selection.capacite) * 100) + '%' }} /></span>
             </div>
 
-            {message && <p className="alert alert-success"><CheckCircle2 size={16} aria-hidden="true" /> {message}</p>}
+            {message && <p className="alert alert-success">{message}</p>}
             {erreurForm && <p className="error">{erreurForm}</p>}
 
             {/* Adherent : reserver ou annuler */}
@@ -313,7 +305,7 @@ export default function Planning() {
             {/* Admin et coach : liste des inscrits */}
             {!estAdherent && (
               <div>
-                <h3 className="fiche-sous-titre"><UserRound size={15} aria-hidden="true" /> Inscrits</h3>
+                <h3 className="fiche-sous-titre">Inscrits</h3>
                 {participants === null && <p className="muted">Chargement…</p>}
                 {participants?.length === 0 && <p className="muted">Personne n'est encore inscrit.</p>}
                 <div className="participants">
@@ -327,10 +319,10 @@ export default function Planning() {
             {estAdmin && (
               <div className="modal-actions">
                 <button className="btn btn-danger-ghost" onClick={() => { setErreurForm(''); setASupprimer(selection); setSelection(null) }}>
-                  <Trash2 size={14} aria-hidden="true" /> Supprimer
+                  Supprimer
                 </button>
                 <button className="btn" onClick={() => ouvrirFormulaire(selection)}>
-                  <Pencil size={14} aria-hidden="true" /> Modifier
+                  Modifier
                 </button>
               </div>
             )}
@@ -383,7 +375,7 @@ export default function Planning() {
               </label>
               {!edition.id && (
                 <label>
-                  <span><Repeat size={13} aria-hidden="true" /> Répéter</span>
+                  <span>Répéter</span>
                   <select name="semaines" value={edition.semaines} onChange={changer}>
                     <option value="1">Une seule fois</option>
                     {[2, 3, 4, 6, 8, 12].map((n) => <option key={n} value={n}>Chaque semaine, {n} semaines</option>)}
