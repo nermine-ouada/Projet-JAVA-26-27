@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, Clock, Target, Check, X, Trash2, Handshake, Lock, CheckCircle2 } from 'lucide-react'
+import { Handshake } from 'lucide-react'
 import { getSeances, createSeance, changerStatutSeance, deleteSeance, getCoachs, getAdherents } from '../api'
 import { useAuth } from '../AuthContext'
 import Modal from '../components/Modal'
@@ -165,16 +165,16 @@ export default function Seances() {
           </div>
           {!estCoach && (
             <button className="btn btn-primary" onClick={ouvrirReservation}>
-              <Plus size={16} aria-hidden="true" /> Réserver une séance
+              Réserver une séance
             </button>
           )}
         </div>
       </div>
 
       <p className="alert alert-info" style={{ marginBottom: 16 }}>
-        <Lock size={16} aria-hidden="true" /> Les séances privées sont visibles uniquement par le coach et l'adhérent concernés.
+        Les séances privées sont visibles uniquement par le coach et l'adhérent concernés.
       </p>
-      {message && <p className="alert alert-success" style={{ marginBottom: 16 }}><CheckCircle2 size={16} aria-hidden="true" /> {message}</p>}
+      {message && <p className="alert alert-success" style={{ marginBottom: 16 }}>{message}</p>}
       {erreur && <p className="error" style={{ marginBottom: 16 }}>{erreur}</p>}
       {chargement && <Loader />}
 
@@ -200,31 +200,31 @@ export default function Seances() {
               <div className="scard-quand">
                 <span className="scard-jour">{dateCourte(s.dateSeance)}</span>
                 <span className="scard-heure">{s.heure.slice(0, 5)}</span>
-                <span className="hint"><Clock size={12} aria-hidden="true" /> {s.dureeMinutes} min</span>
+                <span className="surtitre">{s.dureeMinutes} min</span>
               </div>
 
               <div className="scard-corps">
                 <div className="scard-personnes">
                   {!estCoach && (
-                    <span className="ucard-head">
+                    <span className="scard-personne">
                       <Avatar personne={personne(s.coachNom, s.coachPhoto)} taille="sm" />
                       <span>
-                        <span className="ucard-title">{s.coachNom}</span>
-                        <span className="ucard-sub" style={{ display: 'block' }}>{s.coachSpecialite || 'Coach'}</span>
+                        <span className="surtitre">Coach</span>
+                        <span className="personne-nom">{s.coachNom}</span>
                       </span>
                     </span>
                   )}
                   {!estAdherent && (
-                    <span className="ucard-head">
+                    <span className="scard-personne">
                       <Avatar personne={personne(s.adherentNom, s.adherentPhoto)} taille="sm" />
                       <span>
-                        <span className="ucard-title">{s.adherentNom}</span>
-                        <span className="ucard-sub" style={{ display: 'block' }}>Adhérent</span>
+                        <span className="surtitre">Adhérent</span>
+                        <span className="personne-nom">{s.adherentNom}</span>
                       </span>
                     </span>
                   )}
                 </div>
-                {s.objectif && <p className="scard-objectif"><Target size={13} aria-hidden="true" /> {s.objectif}</p>}
+                {s.objectif && <p className="scard-objectif">{s.objectif}</p>}
               </div>
 
               <div className="scard-fin">
@@ -232,18 +232,17 @@ export default function Seances() {
                 <div className="ucard-actions">
                   {actif && (estCoach || estAdmin) && s.statut === 'EN_ATTENTE' && (
                     <button className="btn btn-small btn-primary" disabled={enCours} onClick={() => changerStatut(s, 'CONFIRMEE')}>
-                      <Check size={14} aria-hidden="true" /> Confirmer
+                      Confirmer
                     </button>
                   )}
                   {actif && (
                     <button className="btn btn-small" disabled={enCours} onClick={() => setAAnnuler(s)}>
-                      <X size={14} aria-hidden="true" /> {estCoach && s.statut === 'EN_ATTENTE' ? 'Refuser' : 'Annuler'}
+                      {estCoach && s.statut === 'EN_ATTENTE' ? 'Refuser' : 'Annuler'}
                     </button>
                   )}
                   {estAdmin && (
                     <button className="btn btn-small btn-danger-ghost" aria-label="Supprimer" onClick={() => setASupprimer(s)}>
-                      <Trash2 size={14} aria-hidden="true" />
-                    </button>
+                                          </button>
                   )}
                 </div>
               </div>

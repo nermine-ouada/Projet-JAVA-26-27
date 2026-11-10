@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { getAbonnements, createAbonnement, updateAbonnement, deleteAbonnement, getAdherents } from '../api'
 import Modal from '../components/Modal'
 
@@ -125,7 +124,7 @@ export default function Abonnements() {
           <h1>Abonnements</h1>
           <p className="muted">{abonnements.length} abonnement(s), dont {actifs} actif(s)</p>
         </div>
-        <button className="btn btn-primary" onClick={() => ouvrir(null)}><Plus size={16} /> Nouvel abonnement</button>
+        <button className="btn btn-primary" onClick={() => ouvrir(null)}>Nouvel abonnement</button>
       </div>
 
       {erreur && <p className="error">{erreur}</p>}
@@ -155,11 +154,10 @@ export default function Abonnements() {
                 <td className="num">{Number(a.prix).toFixed(2)} DT</td>
                 <td><span className={'statut statut-' + a.statut.toLowerCase()}>{STATUTS[a.statut]}</span></td>
                 <td className="actions">
-                  <button className="btn btn-small" onClick={() => ouvrir(a)}><Pencil size={14} /></button>
+                  <button className="btn btn-small" onClick={() => ouvrir(a)}></button>
                   <button className="btn btn-small btn-danger-ghost" aria-label="Supprimer"
                     onClick={() => { setErreurForm(''); setASupprimer(a) }}>
-                    <Trash2 size={14} />
-                  </button>
+                                      </button>
                 </td>
               </tr>
             ))}

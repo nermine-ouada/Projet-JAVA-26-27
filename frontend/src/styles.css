@@ -725,70 +725,75 @@ input:focus, select:focus, textarea:focus {
 /* [eya] salles, cours */
 
 /* [nermine] abonnements */
-/* Statut des abonnements (couleurs de la charte, compatibles mode sombre) */
-.statut { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 999px; }
-.statut-actif { color: var(--success); background: var(--success-bg); }
-.statut-expire { color: var(--ink-2); background: var(--chip); }
-.statut-a_venir { color: var(--warning); background: var(--warning-bg); }
-.mes-abonnements { margin-top: 32px; max-width: 760px; }
-.abonnement-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-.abonnement-carte { padding: 16px; transition: transform 0.2s var(--ease); }
-.abonnement-carte:hover { transform: translateY(-2px); }
-.abonnement-carte p { margin: 4px 0 0; }
-.abonnement-actif { border-color: var(--accent); border-width: 2px; }
-.abonnement-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.abonnement-prix { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+/* Statut des abonnements : memes tampons que .pill */
+.statut-actif { color: var(--success); }
+.statut-expire { color: var(--ink-2); }
+.statut-a_venir { color: var(--warning); }
 
-/* Filtre a deux boutons (aussi defini sur la branche eya : memes valeurs) */
-.segmented { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; }
-.segmented button { border: none; background: var(--surface); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 500; padding: 0 12px; height: 36px; cursor: pointer; transition: background-color 0.15s, color 0.15s; }
-.segmented button + button { border-left: 1px solid var(--line-strong); }
+/* Mes abonnements : cartes d'abonnement comme des tickets */
+.mes-abonnements { margin-top: 36px; max-width: 760px; }
+.abonnement-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.abonnement-carte { padding: 16px 18px; border: 1.5px solid var(--ink); transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease); }
+.abonnement-carte:hover { transform: translate(-3px, -3px); box-shadow: 5px 5px 0 var(--shadow); }
+.abonnement-carte p { margin: 4px 0 0; }
+.abonnement-actif { border-width: 2px; box-shadow: inset 0 6px 0 var(--accent); }
+.abonnement-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 20px; text-transform: uppercase; }
+.abonnement-prix { font-family: var(--font-display); font-size: 36px; font-weight: 700; line-height: 1; }
+
+/* Filtre a deux choix (aussi defini sur la branche eya : memes valeurs) */
+.segmented { display: inline-flex; border: 2px solid var(--ink); }
+.segmented button { border: none; background: transparent; color: var(--ink); font-family: var(--font-display); font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px; height: 36px; cursor: pointer; }
+.segmented button + button { border-left: 2px solid var(--ink); }
 .segmented button.actif { background: var(--ink); color: var(--bg); }
 
-/* Seances privees : filet gauche encre (charte : cours prive) */
-.seances { display: flex; flex-direction: column; gap: 10px; }
+/* Seances privees : registre regle (filet gauche encre = cours prive, charte) */
+.seances { display: flex; flex-direction: column; border: 2px solid var(--ink); background: var(--surface); }
+.seances:empty { display: none; }
 .scard {
   display: grid;
-  grid-template-columns: 120px 1fr auto;
-  gap: 18px;
-  align-items: center;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--ink);
-  border-radius: var(--radius);
-  padding: 14px 18px;
-  transition: transform 0.2s var(--ease), box-shadow 0.2s;
+  grid-template-columns: 130px 1fr auto;
+  align-items: stretch;
+  border-bottom: 1px solid var(--line);
+  border-left: 6px solid var(--ink);
+  transition: background-color 0.12s;
 }
-.scard:hover { transform: translateX(3px); box-shadow: 0 6px 18px -12px var(--shadow); }
-.scard.annulee { opacity: 0.6; border-left-color: var(--line-strong); }
-.scard-quand { display: flex; flex-direction: column; gap: 2px; }
-.scard-jour { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
-.scard-heure { font-family: var(--font-display); font-weight: 700; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
-.scard-quand .hint { display: inline-flex; align-items: center; gap: 4px; }
-.scard-corps { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.scard-personnes { display: flex; flex-wrap: wrap; gap: 10px 24px; }
-.scard-objectif { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13.5px; font-style: italic; }
-.scard-fin { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.scard:last-child { border-bottom: none; }
+.scard:hover { background: var(--hover); }
+.scard.annulee { border-left-color: var(--line); }
+.scard.annulee .scard-heure, .scard.annulee .personne-nom { text-decoration: line-through; color: var(--ink-2); }
+.scard-quand { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 14px 16px; border-right: 1px solid var(--line); }
+.scard-jour { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-2); }
+.scard-heure { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 0.9; font-variant-numeric: tabular-nums; }
+.scard-corps { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 14px 18px; min-width: 0; }
+.scard-personnes { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.scard-personne { display: flex; align-items: center; gap: 10px; }
+.scard-personne > span:last-child { display: flex; flex-direction: column; gap: 2px; }
+.scard-objectif { margin: 0; color: var(--ink-2); font-size: 13.5px; font-style: italic; }
+.scard-objectif::before { content: '« '; }
+.scard-objectif::after { content: ' »'; }
+.scard-fin { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 10px; padding: 14px 16px; }
 
-/* Choix du coach (cartes-boutons radio) */
-.choix-coach { border: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
-.choix-coach legend { font-weight: 500; font-size: 13px; margin-bottom: 6px; padding: 0; }
+/* Choix du coach : vignettes carrees a cocher */
+.choix-coach { border: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.choix-coach legend { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; padding: 0; }
 .form .choix-coach-carte {
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
+  padding: 8px 10px;
+  border: 1.5px solid var(--ink);
   cursor: pointer;
-  transition: border-color 0.15s, background-color 0.15s, transform 0.15s;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+  transition: background-color 0.12s, box-shadow 0.12s;
 }
-.form .choix-coach-carte:hover { border-color: var(--ink); }
-.form .choix-coach-carte.choisi { border-color: var(--accent-dark); background: var(--hover); box-shadow: inset 3px 0 0 var(--accent); }
+.form .choix-coach-carte:hover { background: var(--hover); }
+.form .choix-coach-carte.choisi { box-shadow: 4px 4px 0 var(--accent); background: var(--surface-2); }
 .choix-coach-carte input { position: absolute; opacity: 0; pointer-events: none; }
 
 @media (max-width: 760px) {
-  .scard { grid-template-columns: 1fr; gap: 10px; }
-  .scard-quand { flex-direction: row; align-items: baseline; gap: 10px; }
-  .scard-fin { flex-direction: row; align-items: center; justify-content: space-between; }
+  .scard { grid-template-columns: 1fr; }
+  .scard-quand { flex-direction: row; align-items: baseline; gap: 10px; border-right: none; padding-bottom: 0; }
+  .scard-fin { flex-direction: row; align-items: center; justify-content: space-between; padding-top: 0; }
 }

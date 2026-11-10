@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { CalendarDays } from 'lucide-react'
 import { getAbonnements } from '../api'
 import { STATUTS, formaterDate } from '../pages/Abonnements'
 
@@ -14,7 +13,7 @@ export default function MesAbonnements() {
 
   return (
     <section className="mes-abonnements">
-      <h2 className="section-sous-titre"><CalendarDays size={18} /> Mes abonnements</h2>
+      <h2 className="section-sous-titre">Mes abonnements</h2>
       {erreur && <p className="error">{erreur}</p>}
       {!erreur && abonnements.length === 0 && (
         <div className="card empty">Aucun abonnement pour le moment. Passez à l'accueil du club pour en souscrire un.</div>
