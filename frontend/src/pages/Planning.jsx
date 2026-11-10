@@ -40,8 +40,45 @@ function dateLongue(iso) {
   return texte.charAt(0).toUpperCase() + texte.slice(1)
 }
 
+// "18:30" -> 1110 (minutes depuis minuit)
+function minutes(heure) {
+  const [h, m] = heure.split(':').map(Number)
+  return h * 60 + m
+}
+
+// Un cours occupe sa salle pendant 1 heure (meme regle que le backend)
+const DUREE_COURS = 60
+
+// Cours qui occupe deja cette salle a cette date et heure (sauf le cours en cours de modification)
+function conflitSalle(cours, salleId, date, heure, coursExcluId) {
+  if (!salleId || !date || !heure) return null
+  return cours.find((c) => c.salleId === Number(salleId) && c.dateCours === date && c.id !== coursExcluId
+    && Math.abs(minutes(c.heure) - minutes(heure)) < DUREE_COURS) || null
+}
+
+function finCours(heure) {
+  const fin = minutes(heure) + DUREE_COURS
+  return String(Math.floor(fin / 60) % 24).padStart(2, '0') + ':' + String(fin % 60).padStart(2, '0')
+}
+
 function estPasse(c) {
   return new Date(c.dateCours + 'T' + c.heure) < new Date()
+}
+
+// Message sous le choix de la salle : libre ou occupee (et par quel cours)
+function DisponibiliteSalle({ cours, edition }) {
+  if (!edition.salleId || !edition.dateCours || !edition.heure) {
+    return <span className="dispo">Choisissez la date et l'heure pour voir les salles libres.</span>
+  }
+  const conflit = conflitSalle(cours, edition.salleId, edition.dateCours, edition.heure, edition.id)
+  if (conflit) {
+    return (
+      <span className="dispo dispo-occupee">
+        Occupée de {conflit.heure.slice(0, 5)} à {finCours(conflit.heure)} ({conflit.nomCours})
+      </span>
+    )
+  }
+  return <span className="dispo dispo-libre">Salle libre de {edition.heure} à {finCours(edition.heure)}</span>
 }
 
 // Agenda de la semaine : tout le monde consulte, l'adherent s'inscrit, l'admin planifie
@@ -365,10 +402,16 @@ export default function Planning() {
                 Salle
                 <select name="salleId" value={edition.salleId} onChange={changer} required>
                   <option value="">Choisir…</option>
-                  {salles.map((s) => (
-                    <option key={s.id} value={s.id}>{s.nom} ({s.capacite} pl.)</option>
-                  ))}
+                  {salles.map((s) => {
+                    const occupee = conflitSalle(cours, s.id, edition.dateCours, edition.heure, edition.id)
+                    return (
+                      <option key={s.id} value={s.id} disabled={!!occupee}>
+                        {s.nom} ({s.capacite} pl.){occupee ? ' · occupée à ' + occupee.heure.slice(0, 5) : ''}
+                      </option>
+                    )
+                  })}
                 </select>
+                <DisponibiliteSalle cours={cours} edition={edition} />
               </label>
             </div>
             <div className="row">

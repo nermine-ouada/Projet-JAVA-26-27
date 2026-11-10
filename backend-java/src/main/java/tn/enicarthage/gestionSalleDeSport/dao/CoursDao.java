@@ -33,17 +33,26 @@ public class CoursDao {
             JOIN salle s ON s.id = co.salle_id
             """;
 
-    // Un autre cours occupe-t-il deja la salle a cette date et cette heure ? (sauf le cours "exclu")
-    public boolean existeCreneau(int salleId, LocalDate date, LocalTime heure, int coursExcluId) throws SQLException {
-        String sql = "SELECT 1 FROM cours WHERE salle_id = ? AND date_cours = ? AND heure = ? AND id <> ?";
+    // Duree d'un cours collectif : la salle est occupee 1 heure a partir de l'heure du cours
+    public static final int DUREE_MINUTES = 60;
+
+    // Cours qui occupe deja la salle sur ce creneau (sauf le cours "exclu"), ou null si la salle est libre.
+    // Deux cours se chevauchent s'ils commencent a moins d'une heure d'ecart, le meme jour.
+    public Cours getCoursEnConflit(int salleId, LocalDate date, LocalTime heure, int coursExcluId) throws SQLException {
+        String sql = SELECT + """
+                 WHERE co.salle_id = ? AND co.date_cours = ? AND co.id <> ?
+                   AND ABS(TIME_TO_SEC(TIMEDIFF(co.heure, ?))) < ?
+                 ORDER BY co.heure
+                """;
         try (Connection cnx = DatabaseConnection.getConnection();
              PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setInt(1, salleId);
             ps.setDate(2, Date.valueOf(date));
-            ps.setTime(3, Time.valueOf(heure));
-            ps.setInt(4, coursExcluId);
+            ps.setInt(3, coursExcluId);
+            ps.setTime(4, Time.valueOf(heure));
+            ps.setInt(5, DUREE_MINUTES * 60);
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+                return rs.next() ? mapper(rs) : null;
             }
         }
     }

@@ -765,6 +765,132 @@
           }
         },
         {
+          "name": "Creer 30 min apres dans la meme salle (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Le message cite le cours en conflit\", function () { pm.expect(pm.response.json().erreur).to.include(\"Cours Postman\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "description": "Un cours occupe sa salle 1 heure : 18:30 chevauche le cours de 18:00.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Chevauchement\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"18:30\",\n  \"capacite\": 5,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer 1 h apres dans la meme salle (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"coursApresId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCours\": \"Cours suivant\",\n  \"dateCours\": \"2026-12-01\",\n  \"heure\": \"19:00\",\n  \"capacite\": 5,\n  \"coachId\": {{coachId}},\n  \"salleId\": {{salleId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Supprimer le cours suivant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cours/{{coursApresId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cours",
+                "{{coursApresId}}"
+              ]
+            }
+          }
+        },
+        {
           "name": "Creer avec une capacite > salle (400)",
           "event": [
             {
@@ -2220,6 +2346,10 @@
     },
     {
       "key": "coursPasseId",
+      "value": ""
+    },
+    {
+      "key": "coursApresId",
       "value": ""
     }
   ]

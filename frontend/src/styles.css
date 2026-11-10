@@ -795,4 +795,87 @@ input:focus, select:focus, textarea:focus {
   .agenda-jour { min-height: 0; }
 }
 
+
+/* Plan du club (page Salles) : sol quadrille, salles en blocs blancs */
+.plan-carte { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 18px; margin-bottom: 18px; }
+.plan-entete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.plan {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 120px 120px 96px;
+  grid-template-areas:
+    "s1 s1 s1 s2 s2 s2"
+    "s1 s1 s1 s3 s3 s3"
+    "s4 s4 s5 s5 vest acc";
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ink);
+  background-color: var(--surface-2);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.s1 { grid-area: s1; } .s2 { grid-area: s2; } .s3 { grid-area: s3; } .s4 { grid-area: s4; } .s5 { grid-area: s5; }
+.vestiaires { grid-area: vest; } .accueil { grid-area: acc; }
+.plan-salle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 12px 14px 12px 22px;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  overflow: hidden;
+  animation: fadeUp 0.35s var(--ease) both;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s var(--ease);
+}
+.plan-salle::before { content: ''; position: absolute; left: 10px; top: 12px; bottom: 12px; width: 4px; background: var(--accent); transform: skewX(-10deg); border-radius: 1px; }
+.plan-salle.lecture { cursor: default; }
+.plan-salle:hover, .plan-salle.survol { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); transform: translateY(-1px); }
+.plan-nom { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
+.plan-capacite { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 22px; line-height: 1; }
+.plan-prochain { font-size: 12px; color: var(--ink-2); max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.plan-zone {
+  position: relative;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: repeating-linear-gradient(-45deg, transparent 0 8px, var(--chip) 8px 10px);
+}
+/* Porte d'entree : trait orange sur le bord exterieur */
+.plan-porte { position: absolute; right: -12px; top: 30%; bottom: 30%; width: 5px; background: var(--accent); border-radius: 2px; }
+.table tr.ligne-survol td { background: var(--accent-soft); }
+
+/* Disponibilite de la salle dans le formulaire de cours */
+.dispo { font-size: 12px; font-weight: 400; color: var(--ink-2); }
+.dispo-libre { color: var(--success); }
+.dispo-occupee { color: var(--danger); font-weight: 500; }
+
+@media (max-width: 760px) {
+  .plan {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: 96px;
+    grid-template-areas:
+      "s1 s1"
+      "s2 s3"
+      "s4 s5"
+      "vest acc";
+  }
+  .plan-porte { right: auto; left: 30%; top: auto; bottom: -12px; width: auto; right: 30%; height: 5px; }
+}
+
 /* [nermine] abonnements */

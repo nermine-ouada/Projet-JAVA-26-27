@@ -193,6 +193,11 @@ INSERT INTO inscription_cours (adherent_id, cours_id) VALUES
 
 -- Donnees de test ajoutees par chaque branche
 -- [eya] donnees
+-- Deux salles de plus : boxe et cycling (ids 4 et 5)
+INSERT INTO salle (nom, capacite) VALUES
+    ('Salle de Boxe',  16),
+    ('Studio Cycling', 18);
+
 -- Cours des prochaines semaines (agenda). coach_id : 1 = Sami, 2 = Leila. salle_id : 1 Musculation, 2 Yoga, 3 Cardio
 INSERT INTO cours (nom_cours, date_cours, heure, capacite, coach_id, salle_id) VALUES
     ('Yoga du soir',        '2026-11-11', '18:30:00', 12, 2, 2),
@@ -215,5 +220,11 @@ UNION ALL SELECT 3, id FROM cours WHERE nom_cours = 'Yoga du soir' AND date_cour
 UNION ALL SELECT 1, id FROM cours WHERE nom_cours = 'CrossFit du matin' AND date_cours = '2026-11-12'
 UNION ALL SELECT 2, id FROM cours WHERE nom_cours = 'CrossFit du samedi' AND date_cours = '2026-11-21'
 UNION ALL SELECT 3, id FROM cours WHERE nom_cours = 'CrossFit du samedi' AND date_cours = '2026-11-21';
+
+-- Cours dans les nouvelles salles
+INSERT INTO cours (nom_cours, date_cours, heure, capacite, coach_id, salle_id) VALUES
+    ('Boxe anglaise',  '2026-11-17', '19:00:00', 14, 1, 4),
+    ('Spinning',       '2026-11-18', '07:00:00', 18, 2, 5),
+    ('Boxe anglaise',  '2026-11-24', '19:00:00', 14, 1, 4);
 
 -- [nermine] donnees

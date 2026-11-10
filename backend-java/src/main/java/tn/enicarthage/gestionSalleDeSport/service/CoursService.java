@@ -12,6 +12,8 @@ import tn.enicarthage.gestionSalleDeSport.model.Cours;
 import tn.enicarthage.gestionSalleDeSport.model.Salle;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -97,11 +99,14 @@ public class CoursService {
         return cours;
     }
 
-    // Deux cours ne peuvent pas avoir lieu dans la meme salle a la meme date et heure
-    private void verifierSalleLibre(int salleId, java.time.LocalDate date, Cours cours, int coursExcluId)
+    // Une salle accueille un seul cours a la fois : chaque cours l'occupe pendant 1 heure
+    private void verifierSalleLibre(int salleId, LocalDate date, Cours cours, int coursExcluId)
             throws SQLException {
-        if (coursDao.existeCreneau(salleId, date, cours.getHeure(), coursExcluId)) {
-            throw new ConflictException("La salle est deja occupee le " + date + " a " + cours.getHeure() + ".");
+        Cours conflit = coursDao.getCoursEnConflit(salleId, date, cours.getHeure(), coursExcluId);
+        if (conflit != null) {
+            LocalTime fin = conflit.getHeure().plusMinutes(CoursDao.DUREE_MINUTES);
+            throw new ConflictException("La salle " + conflit.getSalleNom() + " est occupee le " + date
+                    + " de " + conflit.getHeure() + " a " + fin + " (" + conflit.getNomCours() + ").");
         }
     }
 

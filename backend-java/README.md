@@ -88,7 +88,7 @@ Pas d'inscription publique : les comptes (coachs, adherents) sont crees par l'ad
 - `coachId` est l'id de la table `coach` (voir `GET /coachs`).
 - La capacite d'un cours ne peut pas depasser celle de sa salle.
 - `semaines` (creation, 1 a 12, facultatif) : cree le meme cours chaque semaine pendant N semaines.
-- Une salle ne peut pas avoir deux cours a la meme date et heure (409).
+- Un cours occupe sa salle 1 heure : deux cours a moins d'1 h d'ecart dans la meme salle sont refuses (409, le message cite le cours en conflit).
 - Chaque cours renvoie `inscrits` (nombre) et `inscrit` (l'adherent connecte est-il inscrit ?).
 - On ne s'inscrit pas a un cours passe (400) ; la capacite ne peut pas descendre sous le nombre d'inscrits.
 
