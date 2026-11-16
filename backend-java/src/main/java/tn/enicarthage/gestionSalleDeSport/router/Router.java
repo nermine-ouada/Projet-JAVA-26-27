@@ -59,6 +59,9 @@ public class Router {
     private final UtilisateurController utilisateurController = new UtilisateurController();
     private final CoachController coachController = new CoachController();
     // [eya] salles, cours
+    private final SalleController salleController = new SalleController();
+    private final CoursController coursController = new CoursController();
+    private final InscriptionController inscriptionController = new InscriptionController();
 
     // [nermine] abonnements
 
@@ -115,6 +118,10 @@ public class Router {
             case "coachs":
                 return routesCoach(methode, segments, exchange);
             // [eya] salles, cours
+            case "salles":
+                return routesSalle(methode, segments, exchange);
+            case "cours":
+                return routesCours(methode, segments, exchange);
 
             // [nermine] abonnements
 
@@ -241,6 +248,162 @@ public class Router {
 
     // =========================================================
     // [eya] Routes salles, cours
+
+    // ---------------------------------------------------------
+    // CRUD Salles (lecture : connecte, ecriture : ADMIN)
+    // GET    /salles        -> getSalles
+    // GET    /salles/{id}   -> getSalle
+    // POST   /salles        -> createSalle
+    // PUT    /salles/{id}   -> updateSalle
+    // DELETE /salles/{id}   -> deleteSalle
+    // ---------------------------------------------------------
+    private Reponse routesSalle(String methode, String[] segments, HttpExchange exchange)
+            throws IOException, SQLException {
+        UtilisateurResponse connecte = getMe(exchange);
+        if (!methode.equals("GET")) {
+            exigerRole(connecte, "ADMIN");
+        }
+
+        if (segments.length == 2) {
+            switch (methode) {
+                case "GET":  return getSalles();
+                case "POST": return createSalle(exchange);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /salles");
+            }
+        }
+
+        if (segments.length == 3) {
+            int id = entier(segments[2]);
+            switch (methode) {
+                case "GET":    return getSalle(id);
+                case "PUT":    return updateSalle(exchange, id);
+                case "DELETE": return deleteSalle(id);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /salles/{id}");
+            }
+        }
+
+        throw new ResourceNotFoundException("Route inconnue : " + String.join("/", segments));
+    }
+
+    private Reponse getSalles() throws SQLException {
+        return new Reponse(200, gson.toJson(salleController.getSalles()));
+    }
+
+    private Reponse getSalle(int id) throws SQLException {
+        return new Reponse(200, gson.toJson(salleController.getSalle(id)));
+    }
+
+    private Reponse createSalle(HttpExchange exchange) throws IOException, SQLException {
+        SalleRequest request = lireCorps(exchange, SalleRequest.class);
+        return new Reponse(201, gson.toJson(salleController.createSalle(request)));
+    }
+
+    private Reponse updateSalle(HttpExchange exchange, int id) throws IOException, SQLException {
+        SalleRequest request = lireCorps(exchange, SalleRequest.class);
+        return new Reponse(200, gson.toJson(salleController.updateSalle(id, request)));
+    }
+
+    private Reponse deleteSalle(int id) throws SQLException {
+        salleController.deleteSalle(id);
+        return new Reponse(204, "");
+    }
+
+    // ---------------------------------------------------------
+    // CRUD Cours / planning (lecture : connecte, ecriture : ADMIN)
+    // GET    /cours        -> getAllCours
+    // GET    /cours/{id}   -> getCours
+    // POST   /cours        -> createCours
+    // PUT    /cours/{id}   -> updateCours
+    // DELETE /cours/{id}   -> deleteCours
+    //
+    // Inscriptions
+    // POST   /cours/{id}/inscription   -> inscrire     (ADHERENT)
+    // DELETE /cours/{id}/inscription   -> desinscrire  (ADHERENT)
+    // GET    /cours/{id}/participants  -> getParticipants (ADMIN, COACH)
+    // ---------------------------------------------------------
+    private Reponse routesCours(String methode, String[] segments, HttpExchange exchange)
+            throws IOException, SQLException {
+        UtilisateurResponse connecte = getMe(exchange);
+
+        // Sous-routes /cours/{id}/... : chacune verifie son propre role
+        if (segments.length == 4) {
+            int id = entier(segments[2]);
+            switch (methode + " " + segments[3]) {
+                case "POST inscription":   return inscrire(id, connecte);
+                case "DELETE inscription": return desinscrire(id, connecte);
+                case "GET participants":   return getParticipants(id, connecte);
+                default:
+                    throw new ResourceNotFoundException("Route inconnue : " + methode + " " + String.join("/", segments));
+            }
+        }
+
+        if (!methode.equals("GET")) {
+            exigerRole(connecte, "ADMIN");
+        }
+
+        if (segments.length == 2) {
+            switch (methode) {
+                case "GET":  return getAllCours(connecte);
+                case "POST": return createCours(exchange);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /cours");
+            }
+        }
+
+        if (segments.length == 3) {
+            int id = entier(segments[2]);
+            switch (methode) {
+                case "GET":    return getCours(id, connecte);
+                case "PUT":    return updateCours(exchange, id);
+                case "DELETE": return deleteCours(id);
+                default:
+                    throw new IllegalArgumentException("Methode non supportee : " + methode + " /cours/{id}");
+            }
+        }
+
+        throw new ResourceNotFoundException("Route inconnue : " + String.join("/", segments));
+    }
+
+    private Reponse getAllCours(UtilisateurResponse connecte) throws SQLException {
+        return new Reponse(200, gson.toJson(coursController.getAllCours(connecte.id())));
+    }
+
+    private Reponse getCours(int id, UtilisateurResponse connecte) throws SQLException {
+        return new Reponse(200, gson.toJson(coursController.getCours(id, connecte.id())));
+    }
+
+    private Reponse inscrire(int coursId, UtilisateurResponse connecte) throws SQLException {
+        return new Reponse(201, gson.toJson(inscriptionController.inscrire(coursId, connecte.id())));
+    }
+
+    private Reponse desinscrire(int coursId, UtilisateurResponse connecte) throws SQLException {
+        inscriptionController.desinscrire(coursId, connecte.id());
+        return new Reponse(204, "");
+    }
+
+    private Reponse getParticipants(int coursId, UtilisateurResponse connecte) throws SQLException {
+        if (connecte.role().equals("ADHERENT")) {
+            throw new ForbiddenException("Liste reservee a l'admin et aux coachs.");
+        }
+        return new Reponse(200, gson.toJson(inscriptionController.getParticipants(coursId)));
+    }
+
+    private Reponse createCours(HttpExchange exchange) throws IOException, SQLException {
+        CoursRequest request = lireCorps(exchange, CoursRequest.class);
+        return new Reponse(201, gson.toJson(coursController.createCours(request)));
+    }
+
+    private Reponse updateCours(HttpExchange exchange, int id) throws IOException, SQLException {
+        CoursRequest request = lireCorps(exchange, CoursRequest.class);
+        return new Reponse(200, gson.toJson(coursController.updateCours(id, request)));
+    }
+
+    private Reponse deleteCours(int id) throws SQLException {
+        coursController.deleteCours(id);
+        return new Reponse(204, "");
+    }
 
     // =========================================================
     // [nermine] Routes abonnements

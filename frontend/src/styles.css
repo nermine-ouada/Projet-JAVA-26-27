@@ -717,5 +717,170 @@ input:focus, select:focus, textarea:focus {
 
 /* ===== Styles des fonctionnalites (chaque branche ajoute sous sa ligne) ===== */
 /* [eya] salles, cours */
+.inline-icon { display: inline-flex; align-items: center; gap: 6px; }
+.avatar-xs { width: 22px; height: 22px; font-size: 10px; }
+
+/* Filtre a deux choix (Tous / Mes cours) */
+.segmented { display: inline-flex; padding: 3px; gap: 2px; background: var(--chip); border-radius: 10px; }
+.segmented button { border: none; background: transparent; color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 500; padding: 0 12px; height: 32px; border-radius: 8px; cursor: pointer; transition: background-color 0.15s, color 0.15s, box-shadow 0.15s; }
+.segmented button.actif { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+/* Agenda de la semaine */
+.semaine-nav { display: flex; gap: 6px; margin: -6px 0 16px; }
+.agenda { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
+.agenda-jour { min-height: 240px; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; animation: fadeUp 0.35s var(--ease) both; animation-delay: calc(var(--i, 0) * 30ms); }
+.agenda-jour.passe { background: var(--surface-2); box-shadow: none; }
+.agenda-jour.passe .ccard { opacity: 0.55; }
+.agenda-jour-tete { display: flex; align-items: baseline; justify-content: space-between; padding: 10px 12px 6px; }
+.agenda-jour-tete span { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; }
+.agenda-jour-tete strong { font-family: var(--font-display); font-style: italic; font-size: 26px; line-height: 1; }
+.agenda-jour.aujourdhui { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.agenda-jour.aujourdhui .agenda-jour-tete strong, .agenda-jour.aujourdhui .agenda-jour-tete span { color: var(--accent-dark); }
+.agenda-jour-cours { display: flex; flex-direction: column; gap: 6px; padding: 4px 8px 8px; flex: 1; }
+.agenda-vide { color: var(--line-strong); font-size: 12px; text-align: center; padding: 10px 0; }
+.agenda-ajout { margin-top: auto; border: 1px dashed var(--line-strong); background: none; color: var(--ink-2); border-radius: var(--radius-sm); height: 30px; cursor: pointer; font-size: 18px; line-height: 1; transition: color 0.15s, border-color 0.15s, background-color 0.15s; }
+.agenda-ajout::after { content: '+'; }
+.agenda-ajout svg { display: none; }
+.agenda-ajout:hover { color: var(--accent-dark); border-color: var(--accent); background: var(--accent-soft); }
+
+/* Carte de cours : filet orange incline = cours collectif */
+.ccard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 8px 9px 8px 13px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s var(--ease);
+}
+/* Petite marque inclinee a cote de l'heure (et non plus sur toute la hauteur de la carte) */
+.ccard::before { content: ''; position: absolute; left: 5px; top: 10px; height: 16px; width: 3px; background: var(--accent); transform: skewX(-10deg); border-radius: 1px; }
+.ccard:hover { border-color: var(--line-strong); background: var(--surface); transform: translateY(-1px); }
+.ccard.complet::before { background: var(--line-strong); }
+.ccard.inscrit { background: var(--success-bg); }
+.ccard.inscrit::before { background: var(--success); }
+.ccard-heure { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 19px; line-height: 1; font-variant-numeric: tabular-nums; }
+.ccard-nom { font-weight: 600; font-size: 13px; line-height: 1.25; }
+.ccard-ligne { font-size: 11.5px; color: var(--ink-2); max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ccard-places { display: flex; align-items: center; gap: 6px; width: 100%; margin-top: 4px; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ccard.complet .ccard-places { color: var(--danger); font-weight: 600; }
+.ccard-tag { position: absolute; top: 7px; right: 7px; font-size: 10.5px; font-weight: 600; color: var(--success); background: var(--surface); padding: 0 6px; border-radius: 999px; }
+.ccard-tag svg { display: none; }
+
+/* Jauge de remplissage */
+.jauge { flex: 1; height: 4px; border-radius: 2px; background: var(--chip); overflow: hidden; display: block; }
+.jauge span { display: block; height: 100%; border-radius: 2px; background: var(--accent); transform-origin: left; animation: jauge 0.6s var(--ease) both; }
+.complet .jauge span { background: var(--line-strong); }
+.jauge-lg { height: 8px; border-radius: 4px; }
+@keyframes jauge { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Fiche d'un cours */
+.fiche { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.fiche p { margin: 0; }
+.fiche-date { font-weight: 500; color: var(--ink-2); }
+.fiche-places { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--ink-2); }
+.fiche-sous-titre { font-size: 15px; margin-bottom: 8px; }
+.participants { display: flex; flex-wrap: wrap; gap: 6px; }
+.participant { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 3px 10px 3px 3px; border-radius: 999px; background: var(--chip); }
+
+@media (max-width: 1024px) {
+  .agenda { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .agenda { grid-template-columns: 1fr; }
+  .agenda-jour { min-height: 0; }
+}
+
+
+/* Plan du club (page Salles) : sol quadrille, salles en blocs blancs */
+.plan-carte { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 18px; margin-bottom: 18px; }
+.plan-entete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.plan {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 120px 120px 96px;
+  grid-template-areas:
+    "s1 s1 s1 s2 s2 s2"
+    "s1 s1 s1 s3 s3 s3"
+    "s4 s4 s5 s5 vest acc";
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ink);
+  background-color: var(--surface-2);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.s1 { grid-area: s1; } .s2 { grid-area: s2; } .s3 { grid-area: s3; } .s4 { grid-area: s4; } .s5 { grid-area: s5; }
+.vestiaires { grid-area: vest; } .accueil { grid-area: acc; }
+.plan-salle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 12px 14px 12px 22px;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  overflow: hidden;
+  animation: fadeUp 0.35s var(--ease) both;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s var(--ease);
+}
+.plan-salle::before { content: ''; position: absolute; left: 10px; bottom: 12px; height: 38px; width: 4px; background: var(--accent); transform: skewX(-10deg); border-radius: 1px; }
+.plan-salle.lecture { cursor: default; }
+.plan-salle:hover, .plan-salle.survol { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); transform: translateY(-1px); }
+.plan-nom { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
+.plan-capacite { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 22px; line-height: 1; }
+.plan-prochain { font-size: 12px; color: var(--ink-2); max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.plan-zone {
+  position: relative;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: repeating-linear-gradient(-45deg, transparent 0 8px, var(--chip) 8px 10px);
+}
+/* Porte d'entree : trait orange sur le bord exterieur */
+.plan-porte { position: absolute; right: -12px; top: 30%; bottom: 30%; width: 5px; background: var(--accent); border-radius: 2px; }
+.table tr.ligne-survol td { background: var(--accent-soft); }
+
+/* Disponibilite de la salle dans le formulaire de cours */
+.dispo { font-size: 12px; font-weight: 400; color: var(--ink-2); }
+.dispo-libre { color: var(--success); }
+.dispo-occupee { color: var(--danger); font-weight: 500; }
+
+@media (max-width: 760px) {
+  .plan {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: 96px;
+    grid-template-areas:
+      "s1 s1"
+      "s2 s3"
+      "s4 s5"
+      "vest acc";
+  }
+  .plan-porte { right: auto; left: 30%; top: auto; bottom: -12px; width: auto; right: 30%; height: 5px; }
+}
 
 /* [nermine] abonnements */

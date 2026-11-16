@@ -7,6 +7,8 @@ import Profil from './pages/Profil'
 import Dashboard from './pages/Dashboard'
 import Personnes from './pages/Personnes'
 // [eya] salles, cours
+import Salles from './pages/Salles'
+import Planning from './pages/Planning'
 
 // [nermine] abonnements
 
@@ -43,6 +45,8 @@ export default function App() {
         <Route path="/adherents" element={<AdminSeulement><Personnes role="ADHERENT" /></AdminSeulement>} />
         <Route path="/coachs" element={<AdminSeulement><Personnes role="COACH" /></AdminSeulement>} />
         {/* [eya] salles, cours */}
+        <Route path="/planning" element={<Planning />} />
+        <Route path="/salles" element={<Salles />} />
 
         {/* [nermine] abonnements */}
 

@@ -67,6 +67,30 @@ Pas d'inscription publique : les comptes (coachs, adherents) sont crees par l'ad
 - Un champ vide est renvoye en `null` (ex. `"photo": null`).
 
 <!-- [eya] salles, cours -->
+### Salles et cours (branche eya)
+
+| Methode | URL            | Acces    | Corps JSON |
+|---------|----------------|----------|------------|
+| GET     | /salles        | connecte | aucun |
+| GET     | /salles/{id}   | connecte | aucun |
+| POST    | /salles        | ADMIN    | `{"nom":"Salle Boxe","capacite":15}` |
+| PUT     | /salles/{id}   | ADMIN    | `{"nom":"Salle Boxe","capacite":18}` |
+| DELETE  | /salles/{id}   | ADMIN    | aucun (409 si des cours y sont programmes) |
+| GET     | /cours         | connecte | aucun |
+| GET     | /cours/{id}    | connecte | aucun |
+| POST    | /cours         | ADMIN    | `{"nomCours":"Boxe","dateCours":"2026-11-20","heure":"18:00","capacite":10,"coachId":1,"salleId":1,"semaines":4}` |
+| PUT     | /cours/{id}    | ADMIN    | meme corps que POST |
+| DELETE  | /cours/{id}    | ADMIN    | aucun |
+| POST    | /cours/{id}/inscription  | ADHERENT | aucun : reserver sa place (409 si deja inscrit ou complet) |
+| DELETE  | /cours/{id}/inscription  | ADHERENT | aucun : annuler son inscription |
+| GET     | /cours/{id}/participants | ADMIN, COACH | aucun : liste des inscrits |
+
+- `coachId` est l'id de la table `coach` (voir `GET /coachs`).
+- La capacite d'un cours ne peut pas depasser celle de sa salle.
+- `semaines` (creation, 1 a 12, facultatif) : cree le meme cours chaque semaine pendant N semaines.
+- Un cours occupe sa salle 1 heure : deux cours a moins d'1 h d'ecart dans la meme salle sont refuses (409, le message cite le cours en conflit).
+- Chaque cours renvoie `inscrits` (nombre) et `inscrit` (l'adherent connecte est-il inscrit ?).
+- On ne s'inscrit pas a un cours passe (400) ; la capacite ne peut pas descendre sous le nombre d'inscrits.
 
 <!-- [nermine] abonnements -->
 
