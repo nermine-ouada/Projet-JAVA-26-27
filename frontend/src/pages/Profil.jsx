@@ -5,6 +5,7 @@ import { updateMaPhoto } from '../api'
 import { ROLES } from '../roles'
 import PhotoInput from '../components/PhotoInput'
 // [nermine] imports
+import MesAbonnements from '../components/MesAbonnements'
 
 
 // Informations du compte connecte (visible par tous les roles)
@@ -64,6 +65,7 @@ export default function Profil() {
       </div>
 
       {/* [nermine] sections */}
+      {utilisateur.role === 'ADHERENT' && <MesAbonnements />}
 
     </>
   )

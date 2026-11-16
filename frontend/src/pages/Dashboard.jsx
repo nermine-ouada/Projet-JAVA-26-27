@@ -7,6 +7,7 @@ import Loader from '../components/Loader'
 import TuileCours from '../components/TuileCours'
 
 // [nermine] tuiles
+import TuilesNermine from '../components/TuilesNermine'
 
 
 // Tableau de bord de l'admin : tableau des chiffres + derniers inscrits
@@ -54,6 +55,7 @@ export default function Dashboard() {
             <TuileCours />
 
             {/* [nermine] tuiles */}
+            <TuilesNermine />
 
           </div>
 

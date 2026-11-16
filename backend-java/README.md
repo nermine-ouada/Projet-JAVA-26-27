@@ -93,6 +93,36 @@ Pas d'inscription publique : les comptes (coachs, adherents) sont crees par l'ad
 - On ne s'inscrit pas a un cours passe (400) ; la capacite ne peut pas descendre sous le nombre d'inscrits.
 
 <!-- [nermine] abonnements -->
+### Abonnements (branche nermine)
+
+| Methode | URL                 | Acces            | Corps JSON |
+|---------|---------------------|------------------|------------|
+| GET     | /abonnements        | ADMIN, ADHERENT  | aucun (l'adherent recoit seulement les siens) |
+| GET     | /abonnements/{id}   | ADMIN            | aucun |
+| POST    | /abonnements        | ADMIN            | `{"type":"Mensuel","dateDebut":"2026-11-01","dateFin":"2026-12-01","prix":80,"adherentId":1}` |
+| PUT     | /abonnements/{id}   | ADMIN            | meme corps que POST |
+| DELETE  | /abonnements/{id}   | ADMIN            | aucun |
+| GET     | /adherents          | ADMIN            | aucun (liste pour le formulaire d'abonnement) |
+
+- `type` : `Mensuel`, `Trimestriel` ou `Annuel`.
+- `adherentId` est l'id de la table `adherent` (voir `GET /adherents`).
+- La date de fin doit etre apres la date de debut, le prix doit etre positif.
+- Chaque abonnement renvoye contient un `statut` calcule : `ACTIF`, `EXPIRE` ou `A_VENIR`.
+
+### Coaching prive (branche nermine)
+
+| Methode | URL                   | Acces | Corps JSON |
+|---------|-----------------------|-------|------------|
+| GET     | /seances              | connecte | aucun (admin : toutes ; coach et adherent : les leurs) |
+| GET     | /seances/{id}         | son coach, son adherent, ADMIN | aucun |
+| POST    | /seances              | ADHERENT, ADMIN | `{"coachId":1,"dateSeance":"2026-11-25","heure":"17:00","dureeMinutes":60,"objectif":"Perdre 3 kg"}` (+ `"adherentId"` pour l'admin) |
+| PUT     | /seances/{id}/statut  | COACH, ADHERENT, ADMIN | `{"statut":"CONFIRMEE"}` ou `{"statut":"ANNULEE"}` |
+| DELETE  | /seances/{id}         | ADMIN | aucun |
+
+- `statut` : `EN_ATTENTE` (demande d'un adherent), `CONFIRMEE` (par le coach, ou reservee par l'admin), `ANNULEE`.
+- Le coach confirme ou annule ses seances ; l'adherent peut seulement annuler les siennes.
+- `dureeMinutes` : 30, 45, 60 ou 90. La seance doit etre dans le futur.
+- Un coach ne peut pas avoir deux seances qui se chevauchent (409). Une seance annulee libere le creneau.
 
 ## Codes HTTP
 

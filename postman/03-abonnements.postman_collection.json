@@ -1,0 +1,2207 @@
+{
+  "info": {
+    "name": "03 Abonnements et Coaching prive",
+    "description": "CRUD des abonnements, liste des adherents et seances de coaching prive. Lancer dans l'ordre (Runner).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Connexion",
+      "item": [
+        {
+          "name": "Login admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role ADMIN\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"ADMIN\"); });",
+                  "pm.collectionVariables.set(\"adminToken\", json.token);",
+                  "pm.collectionVariables.set(\"adminId\", json.utilisateur.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@fitness.tn\",\n  \"motDePasse\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login adherent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role ADHERENT\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"ADHERENT\"); });",
+                  "pm.collectionVariables.set(\"adherentToken\", json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"yassine@mail.tn\",\n  \"motDePasse\": \"pass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login coach",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role COACH\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"COACH\"); });",
+                  "pm.collectionVariables.set(\"coachToken\", json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sami.coach@fitness.tn\",\n  \"motDePasse\": \"coach123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login coach 2 (Leila)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role COACH\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"COACH\"); });",
+                  "pm.collectionVariables.set(\"coach2Token\", json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"leila.coach@fitness.tn\",\n  \"motDePasse\": \"coach123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login adherent 2 (Nour)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token recu et role ADHERENT\", function () { pm.expect(json.token).to.be.a(\"string\"); pm.expect(json.utilisateur.role).to.eql(\"ADHERENT\"); });",
+                  "pm.collectionVariables.set(\"adherent2Token\", json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nour@mail.tn\",\n  \"motDePasse\": \"pass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Abonnements (CRUD)",
+      "item": [
+        {
+          "name": "Lister sans token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lister en coach (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lister en adherent (seulement les siens)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Uniquement les abonnements de Yassine\", function () { json.forEach(function (a) { pm.expect(a.adherentNom).to.eql(\"Yassine Karoui\"); }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lister en admin (tous)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Au moins 3 abonnements avec un statut\", function () { pm.expect(json.length).to.be.at.least(3); json.forEach(function (a) { pm.expect([\"ACTIF\", \"EXPIRE\", \"A_VENIR\"]).to.include(a.statut); }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lister les adherents (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Au moins un adherent\", function () { pm.expect(json).to.be.an(\"array\").that.is.not.empty; });",
+                  "pm.collectionVariables.set(\"adherentId\", json[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/adherents",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "adherents"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lister les adherents en adherent (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/adherents",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "adherents"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Creer un abonnement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Statut calcule et nom de l'adherent\", function () { pm.expect([\"ACTIF\", \"EXPIRE\", \"A_VENIR\"]).to.include(json.statut); pm.expect(json.adherentNom).to.be.a(\"string\"); });",
+                  "pm.collectionVariables.set(\"abonnementId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Mensuel\",\n  \"dateDebut\": \"2026-11-01\",\n  \"dateFin\": \"2026-12-01\",\n  \"prix\": 80,\n  \"adherentId\": {{adherentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer avec un type invalide (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Gratuit\",\n  \"dateDebut\": \"2026-11-01\",\n  \"dateFin\": \"2026-12-01\",\n  \"prix\": 80,\n  \"adherentId\": {{adherentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer avec fin avant debut (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Mensuel\",\n  \"dateDebut\": \"2026-12-01\",\n  \"dateFin\": \"2026-11-01\",\n  \"prix\": 80,\n  \"adherentId\": {{adherentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer avec un prix negatif (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Mensuel\",\n  \"dateDebut\": \"2026-11-01\",\n  \"dateFin\": \"2026-12-01\",\n  \"prix\": -5,\n  \"adherentId\": {{adherentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer pour un adherent inexistant (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Mensuel\",\n  \"dateDebut\": \"2026-11-01\",\n  \"dateFin\": \"2026-12-01\",\n  \"prix\": 80,\n  \"adherentId\": 999999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer avec une date invalide (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Mensuel\",\n  \"dateDebut\": \"01/11/2026\",\n  \"dateFin\": \"2026-12-01\",\n  \"prix\": 80,\n  \"adherentId\": {{adherentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer en adherent (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Mensuel\",\n  \"dateDebut\": \"2026-11-01\",\n  \"dateFin\": \"2026-12-01\",\n  \"prix\": 80,\n  \"adherentId\": {{adherentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Consulter l'abonnement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements/{{abonnementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements",
+                "{{abonnementId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Modifier (dates futures = A_VENIR)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Statut A_VENIR et prix 210.5\", function () { pm.expect(json.statut).to.eql(\"A_VENIR\"); pm.expect(json.prix).to.eql(210.5); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements/{{abonnementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements",
+                "{{abonnementId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Trimestriel\",\n  \"dateDebut\": \"2030-01-01\",\n  \"dateFin\": \"2030-04-01\",\n  \"prix\": 210.5,\n  \"adherentId\": {{adherentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Consulter un id inexistant (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Supprimer l'abonnement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements/{{abonnementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements",
+                "{{abonnementId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consulter l'abonnement supprime (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/abonnements/{{abonnementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "abonnements",
+                "{{abonnementId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Coaching prive (seances)",
+      "item": [
+        {
+          "name": "Trouver Sami dans les coachs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "const sami = pm.response.json().find(function (c) { return c.prenom === \"Sami\"; });",
+                  "pm.test(\"Sami existe\", function () { pm.expect(sami).to.be.an(\"object\"); });",
+                  "pm.collectionVariables.set(\"samiCoachId\", sami.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/coachs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coachs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lister sans token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Coach : seulement ses seances",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Toutes avec Sami\", function () { pm.response.json().forEach(function (s) { pm.expect(s.coachNom).to.eql(\"Sami Trabelsi\"); }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Adherent : seulement ses seances",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Toutes pour Yassine\", function () { pm.response.json().forEach(function (s) { pm.expect(s.adherentNom).to.eql(\"Yassine Karoui\"); }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Adherent reserve une seance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"En attente, pour Yassine avec Sami\", function () { pm.expect(json.statut).to.eql(\"EN_ATTENTE\"); pm.expect(json.adherentNom).to.eql(\"Yassine Karoui\"); pm.expect(json.coachNom).to.eql(\"Sami Trabelsi\"); });",
+                  "pm.collectionVariables.set(\"seanceId\", json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"15:00\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creneau qui chevauche (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"15:30\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Date passee (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"dateSeance\": \"2026-01-05\",\n  \"heure\": \"15:00\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Duree invalide (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"09:00\",\n  \"dureeMinutes\": 50,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Coach inexistant (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": 999999,\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"15:00\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Un coach ne reserve pas (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"09:00\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Admin sans adherent (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"17:00\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Admin reserve pour un adherent (confirmee)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Deja confirmee\", function () { pm.expect(pm.response.json().statut).to.eql(\"CONFIRMEE\"); });",
+                  "pm.collectionVariables.set(\"seanceAdminId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"adherentId\": {{adherentId}},\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"17:00\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Un autre adherent ne voit pas la seance (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "L'adherent ne peut pas confirmer (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}/statut",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}",
+                "statut"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"CONFIRMEE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Un autre coach ne peut pas confirmer (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coach2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}/statut",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}",
+                "statut"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"CONFIRMEE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Statut invalide (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}/statut",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}",
+                "statut"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"PEUT_ETRE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Le coach confirme",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Confirmee\", function () { pm.expect(pm.response.json().statut).to.eql(\"CONFIRMEE\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}/statut",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}",
+                "statut"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"CONFIRMEE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "L'adherent annule",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Annulee\", function () { pm.expect(pm.response.json().statut).to.eql(\"ANNULEE\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}/statut",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}",
+                "statut"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"ANNULEE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Annuler une seance deja annulee (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}/statut",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}",
+                "statut"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"ANNULEE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Le creneau annule est de nouveau libre",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"seanceLibreId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coachId\": {{samiCoachId}},\n  \"dateSeance\": \"2026-12-10\",\n  \"heure\": \"15:30\",\n  \"dureeMinutes\": 60,\n  \"objectif\": \"Test Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Un coach ne supprime pas (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Supprimer la seance (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Supprimer la seance de l'admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceAdminId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceAdminId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Supprimer la seance de Nour",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceLibreId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceLibreId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consulter une seance supprimee (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur en JSON\", function () { pm.expect(pm.response.json().erreur).to.be.a(\"string\").and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seances/{{seanceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seances",
+                "{{seanceId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Deconnexion",
+      "item": [
+        {
+          "name": "Logout adherent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout adherent 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adherent2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout coach",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coachToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout coach 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coach2Token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "adminId",
+      "value": ""
+    },
+    {
+      "key": "adherentToken",
+      "value": ""
+    },
+    {
+      "key": "adherent2Token",
+      "value": ""
+    },
+    {
+      "key": "coachToken",
+      "value": ""
+    },
+    {
+      "key": "coach2Token",
+      "value": ""
+    },
+    {
+      "key": "adherentId",
+      "value": ""
+    },
+    {
+      "key": "abonnementId",
+      "value": ""
+    },
+    {
+      "key": "samiCoachId",
+      "value": ""
+    },
+    {
+      "key": "seanceId",
+      "value": ""
+    },
+    {
+      "key": "seanceAdminId",
+      "value": ""
+    },
+    {
+      "key": "seanceLibreId",
+      "value": ""
+    }
+  ]
+}

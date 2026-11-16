@@ -35,6 +35,8 @@ export default function Layout() {
             {estAdmin && <NavLink to="/salles">Salles</NavLink>}
 
             {/* [nermine] abonnements */}
+            {estAdmin && <NavLink to="/abonnements">Abonnements</NavLink>}
+            <NavLink to="/seances">{estAdmin ? 'Séances privées' : estCoach ? 'Mes séances' : 'Coaching privé'}</NavLink>
 
             <NavLink to="/profil">Mon profil</NavLink>
           </nav>

@@ -91,3 +91,20 @@ export const desinscrireCours = (id) => request('/cours/' + id + '/inscription',
 export const getParticipants = (id) => request('/cours/' + id + '/participants')
 
 // ---------- [nermine] Abonnements ----------
+
+// Admin : tous les abonnements. Adherent : seulement les siens.
+export const getAbonnements = () => request('/abonnements')
+export const getAbonnement = (id) => request('/abonnements/' + id)
+export const createAbonnement = (abonnement) => request('/abonnements', 'POST', abonnement)
+export const updateAbonnement = (id, abonnement) => request('/abonnements/' + id, 'PUT', abonnement)
+export const deleteAbonnement = (id) => request('/abonnements/' + id, 'DELETE')
+
+export const getAdherents = () => request('/adherents')
+
+// Coaching prive. Admin : toutes les seances ; coach et adherent : les leurs.
+export const getSeances = () => request('/seances')
+export const getSeance = (id) => request('/seances/' + id)
+export const createSeance = (seance) => request('/seances', 'POST', seance)
+// statut : 'CONFIRMEE' (coach) ou 'ANNULEE' (coach ou adherent)
+export const changerStatutSeance = (id, statut) => request('/seances/' + id + '/statut', 'PUT', { statut })
+export const deleteSeance = (id) => request('/seances/' + id, 'DELETE')
